@@ -1,0 +1,4 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/co.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Sprites/co.xnb","TextureProcessor","Texture2DContent",540815,2176097,0.2723083
+"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/Chest.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Sprites/Props/Chest.xnb","TextureProcessor","Texture2DContent",465,1365,0.0089246
+"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/ChestOpened.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Sprites/Props/ChestOpened.xnb","TextureProcessor","Texture2DContent",406,1813,0.012824
