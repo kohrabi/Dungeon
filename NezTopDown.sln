@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NezTopDown", "NezTopDown\NezTopDown.csproj", "{DB8E4867-803D-48B8-B5D3-A15ABAB2C416}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NezTopDown", "NezTopDown\NezTopDown.csproj", "{DB8E4867-803D-48B8-B5D3-A15ABAB2C416}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez.MG38", "Nez\Nez.Portable\Nez.MG38.csproj", "{600A2409-FCAE-465F-ABAA-9F1B73D5B70F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez.MG38.ImGui", "Nez\Nez.ImGui\Nez.MG38.ImGui.csproj", "{56915B87-BFFE-4859-AAEF-A11A74D8090C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{600A2409-FCAE-465F-ABAA-9F1B73D5B70F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{600A2409-FCAE-465F-ABAA-9F1B73D5B70F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{600A2409-FCAE-465F-ABAA-9F1B73D5B70F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

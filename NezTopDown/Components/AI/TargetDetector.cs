@@ -19,6 +19,8 @@ namespace NezTopDown.Components.AI
         //gizmo parameters
         private List<Transform> colliders;
 
+        public bool Detected { get; private set; }  
+
         public TargetDetector()
         {
             colliders = new List<Transform>();
@@ -61,14 +63,17 @@ namespace NezTopDown.Components.AI
                 {
                     //Debug.DrawLine(Entity.Transform.Position, playerCollider.Transform.Position, Color.Magenta);
                     colliders = new List<Transform>() { playerCollider.Transform };
+                    Detected = true;
                 }
                 else
                 {
+                    Detected = false;
                     colliders = null;
                 }
             }
             else
             {
+                Detected = false;
                 //Enemy doesn't see the player
                 colliders = null;
             }

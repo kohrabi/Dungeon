@@ -1,1 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?><SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><Profile>HiDef</Profile><Platform>DesktopGL</Platform><Config /><SourceFiles><File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/co.png</File><File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/Chest.png</File><File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/ChestOpened.png</File></SourceFiles><DestFiles><File xsi:nil="true" /><File xsi:nil="true" /><File xsi:nil="true" /></DestFiles></SourceFileCollection>
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>HiDef</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Effects/HitFlash.fx</File>
+    <File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/GUI/Health.png</File>
+    <File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/GUI/HealthBar.png</File>
+    <File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/Chest.png</File>
+    <File>D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/ChestOpened.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
