@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BulletMLLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
 using Nez;
 using Nez.ImGuiTools;
@@ -8,6 +8,7 @@ using Nez.Sprites;
 using Nez.Textures;
 using Nez.UI;
 using NezTopDown.Components;
+using NezTopDown.Components.Projectiles;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,11 +53,11 @@ namespace NezTopDown
             imGuiManager.SetEnabled(false);
             //---------------------------------------------
 
-            
+
 
             //CreateGame();
-            CreateUITest();
-
+            //CreateUITest();
+            CreateBulletTest();
         }
 
 
@@ -64,7 +65,51 @@ namespace NezTopDown
         {
             base.Update(gameTime);
 
+            _bulletManager.Update();
+
             //entity.Rotation += 5 * Time.DeltaTime;
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+            Nez.Graphics.Instance.Batcher.Begin();
+            foreach (BulletMover mover in _bulletManager.movers)
+                Nez.Graphics.Instance.Batcher.Draw(_bulletTexture, mover.pos);
+            Nez.Graphics.Instance.Batcher.End();
+            
+        }
+
+        BulletMLManager _bulletManager;
+        BulletMover _bulletMover;
+        BulletPattern _bulletPattern;
+        Texture2D _bulletTexture;
+
+        void CreateBulletTest()
+        {
+            var scene = Scene.CreateWithDefaultRenderer(Microsoft.Xna.Framework.Color.CornflowerBlue);
+    
+            _bulletTexture = scene.Content.Load<Texture2D>("Sprites/Projectiles/Bullet");
+
+            WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
+            var entity = scene.CreateEntity("test");
+            entity.Transform.Position = new Vector2(300, 300);
+            entity.AddComponent(new SpriteRenderer(WeaponAtlas.Sprites[0]));
+            entity.AddComponent(new BoxCollider());
+            
+            _bulletManager = new BulletMLManager(entity.Transform);
+
+            _bulletPattern = new BulletPattern(_bulletManager);
+            _bulletPattern.ParseXML("Content/Data/Bullets/TestBullet.xml");
+
+            //clear out all the bulelts
+            _bulletManager.Clear();
+
+            //add a new bullet in the center of the screen
+            _bulletMover = (BulletMover)_bulletManager.CreateTopBullet();
+            _bulletMover.pos = new Vector2(Screen.PreferredBackBufferWidth / 2f, Screen.PreferredBackBufferHeight / 2f);
+            _bulletMover.InitTopNode(_bulletPattern.RootNode);
+            Core.Scene = scene;
         }
 
         public const int ScreenSpaceRenderLayer = 999;

@@ -34,6 +34,8 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BulletMLLib" Version="2.0.5" />
+    <PackageReference Include="Equationator" Version="1.0.10" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -43,6 +45,12 @@
     <ProjectReference Include="..\Nez\Nez.Portable\Nez.MG38.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\Data\Bullets\bulletml.dtd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Data\Bullets\TestBullet.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Data\Weapons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

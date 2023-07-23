@@ -43,6 +43,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/GUI/HealthBar.png
 
+#begin Sprites/Projectiles/Bullet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Projectiles/Bullet.png
+
 #begin Sprites/Props/Chest.png
 /importer:TextureImporter
 /processor:TextureProcessor
