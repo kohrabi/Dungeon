@@ -1,6 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Effects/HitFlash.fx","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Content/Effects/HitFlash.xnb","EffectProcessor","CompiledEffectContent",935,792,0.4481262
-"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/GUI/Health.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Content/Sprites/GUI/Health.xnb","TextureProcessor","Texture2DContent",113,673,0.2663302
-"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/GUI/HealthBar.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Content/Sprites/GUI/HealthBar.xnb","TextureProcessor","Texture2DContent",176,1541,0.2918047
-"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/Chest.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Content/Sprites/Props/Chest.xnb","TextureProcessor","Texture2DContent",465,1365,0.1269013
-"D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/Sprites/Props/ChestOpened.png","D:/Gamedev/Project/Monogame/NezTopDown/NezTopDown/Content/bin/DesktopGL/Content/Sprites/Props/ChestOpened.xnb","TextureProcessor","Texture2DContent",406,1813,0.0018958
