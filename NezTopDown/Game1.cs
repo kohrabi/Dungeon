@@ -61,7 +61,7 @@ namespace NezTopDown
             // toggle ImGui rendering on/off. It starts out enabled.
             imGuiManager.SetEnabled(false);
             //---------------------------------------------
-            Core.DebugRenderEnabled = false;
+            Core.DebugRenderEnabled = true;
 
 
             Core.Scene = CreateGame();

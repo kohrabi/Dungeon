@@ -128,7 +128,7 @@ namespace NezTopDown.Components
 
                 firerateRemain = weapon.firerate;
                 var entity = Entity.Scene.CreateEntity(Entity.Name + "Projectile");
-                entity.SetParent(Entity);
+                entity.Transform.Position = Entity.Transform.Position;
                 Vector2 knockback = direction * weapon.hitPoint / 10f;
                 if (weapon.type == 1)
                 {

@@ -23,6 +23,13 @@ namespace NezTopDown.Components.AI
             base.Initialize();
         }
 
+        public override void OnDisabled()
+        {
+            base.OnDisabled();
+            currentTarget = null;
+            targets.Clear();
+        }
+
         public override void OnAddedToEntity()
         {
             base.OnAddedToEntity();

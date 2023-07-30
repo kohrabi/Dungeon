@@ -31,6 +31,13 @@ namespace NezTopDown
         Enemy
     }
 
+    public enum EntityState
+    {
+        Free,
+        Hit,
+        Dead
+    }
+
     public class GameManager
     {
 

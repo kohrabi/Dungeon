@@ -8,13 +8,6 @@ using System;
 
 namespace NezTopDown.Components
 {
-    public enum EntityState
-    {
-        Free,
-        Hit,
-        Dead
-    }
-
     public class Player : Component, Nez.IUpdateable
     {
         #region Constants
@@ -66,23 +59,23 @@ namespace NezTopDown.Components
             SetupInput();
         }
 
-        //public override void DebugRender(Batcher batcher)
-        //{
-        //    base.DebugRender(batcher);
-        //
-        //    float direction = Utils.PointDirection(Vector2.Zero, _weapon.aimingDirection);
-        //    batcher.DrawCircle(Entity.Transform.Position, 100f, Color.Red);
-        //    for (int i = 0; i < 8; i++)
-        //    {
-        //        float angle = (360 / 8) * i;
-        //        float difference = Math.Abs(Utils.AngleDifference(angle, direction));
-        //        float result = (180 - difference) / 180;
-        //        //Vector2 di = new Vector2(Utils.LengthDir_X(result, angle), Utils.LengthDir_Y(result, angle));
-        //        batcher.DrawLine(Entity.Position, Entity.Position + Directions.eightDirections[i] * result * 100f, Color.White);
-        //        //accept only directions at the less than 90 degrees to the target direction
-        //
-        //    }
-        //}
+        public override void DebugRender(Batcher batcher)
+        {
+            base.DebugRender(batcher);
+        
+            float direction = Utils.PointDirection(Vector2.Zero, _weapon.aimingDirection);
+            batcher.DrawCircle(Entity.Transform.Position, 100f, Color.Red);
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = (360 / 8) * i;
+                float difference = Math.Abs(0.65f - Math.Abs(Utils.AngleDifference(angle, direction)));
+                float result = (180 - difference) / 180;
+                //Vector2 di = new Vector2(Utils.LengthDir_X(result, angle), Utils.LengthDir_Y(result, angle));
+                batcher.DrawLine(Entity.Position, Entity.Position + Directions.eightDirections[i] * result * 100f, Color.White);
+                //accept only directions at the less than 90 degrees to the target direction
+        
+            }
+        }
 
         void SetupInput()
         {

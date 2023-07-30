@@ -43,6 +43,14 @@ namespace NezTopDown.Components.AI
             base.OnAddedToEntity();
         }
 
+        public override void OnDisabled()
+        {
+            base.OnDisabled();
+            aiData.currentTarget = null;
+            steeringBehaviours.Clear();
+            detectors.Clear();
+        }
+
         private void PerformDetection()
         {
             foreach (Detector detector in detectors)

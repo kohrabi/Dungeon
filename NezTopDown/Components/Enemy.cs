@@ -188,12 +188,12 @@ namespace NezTopDown.Components
             else
             { 
                 Entity.GetComponent<BoxCollider>().Enabled = false;
-                Entity.GetComponent<EnemyAI>().Enabled = false; 
             }
             knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
             _animator.Color = Color.Gray;
 
             // disable entity leaving only the corpse
+            Entity.GetComponent<EnemyAI>().Enabled = false; 
             Entity.GetComponent<WeaponHolder>().Enabled = false;
         }
 
@@ -208,7 +208,7 @@ namespace NezTopDown.Components
         uint check;
         public void OnTriggerEnter(Collider other, Collider local)
         {
-            if (other.Entity.Parent.Entity.Name != local.Entity.Name && check != other.Entity.Id && enemyHealth > 0)
+            if (other.Entity.Name != (string)(local.Entity.Name + "Projectile") && check != other.Entity.Id && enemyHealth > 0)
             {
                 hitBy = other.Entity.GetComponent<Projectile>().WeaponID;
                 Hit(other.Entity.GetComponent<Projectile>().Direction, Game1.WeaponsList[hitBy].hitPoint);
