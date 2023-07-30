@@ -31,7 +31,8 @@ namespace NezTopDown.Components
 		float chanceSpawnChest = 0.3f;
 
 		float chanceSpawnEnemy = 0.4f;
-		int enemyCount = 0, maxEnemyCount = 8;
+        public static int enemyCount { get; set; } = 0;
+		int maxEnemyCount = 8;
 
 		int maxWalkers = 10;
 		float Scale = 3f; // Scale the Level
@@ -53,6 +54,7 @@ namespace NezTopDown.Components
 
         public override void OnAddedToEntity()
 		{
+			Entity.Transform.Position = Vector2.Zero;
 			Setup();
 			CreateFloors();
 			CreateWalls();
@@ -304,25 +306,26 @@ namespace NezTopDown.Components
 			Vector2 spawnPos = Entity.Position + new Vector2(x, y) * 16 * Scale;
 			//spawn object
 			var entity = Entity.Scene.CreateEntity("tile", spawnPos);
+			entity.SetParent(Entity);
 			Sprite sprite = floorSprite[Nez.Random.Range(0, floorSprite.Length)];
 			if (type == gridSpace.wall)
 			{
 				var box = entity.AddComponent<BoxCollider>();
 				
 				if (x - 1 >= 0 && grid[x - 1, y] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[0]));
+					entity.AddComponent(new SpriteRenderer(wallSprite[0])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
 				if (y - 1 >= 0 && grid[x, y - 1] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[1]));
-				if (x + 1 < roomWidth && grid[x + 1, y] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[2]));
-				if (y + 1 < roomHeight && grid[x, y + 1] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[3]));
-				box.Width = 16;
+					entity.AddComponent(new SpriteRenderer(wallSprite[1])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
+                if (x + 1 < roomWidth && grid[x + 1, y] == gridSpace.floor)
+					entity.AddComponent(new SpriteRenderer(wallSprite[2])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
+                if (y + 1 < roomHeight && grid[x, y + 1] == gridSpace.floor)
+					entity.AddComponent(new SpriteRenderer(wallSprite[3])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
+                box.Width = 16;
 				box.Height = 16;
-				box.PhysicsLayer = 1 << 2;
+				Flags.SetFlag(ref box.PhysicsLayer, (int)PhysicsLayers.Tile);
 			}
 			entity.Scale *= Scale;
-			entity.AddComponent(new SpriteRenderer(sprite)).LayerDepth = 2;
+			entity.AddComponent(new SpriteRenderer(sprite)).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Tile));
 
 			// Spawning Enemy
 			if (type == gridSpace.floor)

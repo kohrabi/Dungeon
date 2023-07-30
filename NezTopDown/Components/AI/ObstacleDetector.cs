@@ -20,8 +20,8 @@ namespace NezTopDown.Components.AI
         public override void OnAddedToEntity()
         {
             //Flags.SetFlag(ref layerMask, 1);
-            Flags.SetFlag(ref layerMask, 2);
-            Flags.SetFlag(ref layerMask, 3);
+            Flags.SetFlag(ref layerMask, (int)PhysicsLayers.Tile);
+            Flags.SetFlag(ref layerMask, (int)PhysicsLayers.Enemy);
             base.OnAddedToEntity();
         }
 

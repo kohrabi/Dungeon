@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Nez;
 using Nez.Sprites;
+using NezTopDown.Components.AI;
 using System;
 
 namespace NezTopDown.Components
@@ -10,22 +11,38 @@ namespace NezTopDown.Components
     public enum EntityState
     {
         Free,
-        Hit
+        Hit,
+        Dead
     }
 
     public class Player : Component, Nez.IUpdateable
     {
-        float _moveSpeed = 190f;
+        #region Constants
 
-        SpriteAnimator _animator;
-        BoxCollider _collider;
-        Mover _mover;
-        VirtualIntegerAxis _xAxisInput;
-        VirtualIntegerAxis _yAxisInput;
+        private const float knockbackDelay = 0.2f;
+        private const float _moveSpeed = 190f;
+        
+        #endregion
 
-        public bool ChangeWeapon { get; private set; } = false; 
+        #region Components
 
-        EntityState playerState;
+        private SpriteAnimator _animator;
+        private BoxCollider _collider;
+        private Mover _mover;
+        private WeaponHolder _weapon;
+        private VirtualIntegerAxis _xAxisInput;
+        private VirtualIntegerAxis _yAxisInput;
+        private EntityState playerState;
+
+        #endregion
+
+        #region Vars
+        
+        public bool ChangeWeapon { get; private set; } = false;
+        Vector2 weaponKnockback = Vector2.Zero;
+        float knockbackDelayRemain = knockbackDelay;
+
+        #endregion
 
         public override void OnAddedToEntity()
         {
@@ -34,21 +51,38 @@ namespace NezTopDown.Components
             _animator = Entity.AddComponent<SpriteAnimator>();
             _animator.AddAnimationsFromAtlas(atlas);
             _animator.Play("Idle");
-            _animator.LayerDepth = 0;
-            //_animator.SetMaterial(new Material(_effect));
-            //_animator.Material.Effect.Parameters["overlayColor"].SetValue(Color.White.ToVector4());
+            _animator.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Player));
+            _animator.SetMaterial(new Material());
 
-            Entity.AddComponent(new WeaponHolder());
+            _weapon = Entity.AddComponent(new WeaponHolder());
             _collider = Entity.AddComponent(new BoxCollider());
-            _collider.PhysicsLayer = 1 << 1;
+            Flags.SetFlag(ref _collider.PhysicsLayer, (int)PhysicsLayers.Player);
             _collider.CollidesWithLayers = 0;
-            Nez.Flags.SetFlag(ref _collider.CollidesWithLayers, 2); // tile
+            Flags.SetFlag(ref _collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tile
             _mover = Entity.AddComponent<Mover>();
 
             playerState = EntityState.Free;
 
             SetupInput();
         }
+
+        //public override void DebugRender(Batcher batcher)
+        //{
+        //    base.DebugRender(batcher);
+        //
+        //    float direction = Utils.PointDirection(Vector2.Zero, _weapon.aimingDirection);
+        //    batcher.DrawCircle(Entity.Transform.Position, 100f, Color.Red);
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        float angle = (360 / 8) * i;
+        //        float difference = Math.Abs(Utils.AngleDifference(angle, direction));
+        //        float result = (180 - difference) / 180;
+        //        //Vector2 di = new Vector2(Utils.LengthDir_X(result, angle), Utils.LengthDir_Y(result, angle));
+        //        batcher.DrawLine(Entity.Position, Entity.Position + Directions.eightDirections[i] * result * 100f, Color.White);
+        //        //accept only directions at the less than 90 degrees to the target direction
+        //
+        //    }
+        //}
 
         void SetupInput()
         {
@@ -62,8 +96,6 @@ namespace NezTopDown.Components
 
         }
 
-        const float delay = 0.4f;
-        float _remainingDelay = delay;
         void Nez.IUpdateable.Update()
         {
             switch (playerState)
@@ -80,22 +112,18 @@ namespace NezTopDown.Components
         void PlayerState_Free()
         {
             var moveDir = new Vector2(_xAxisInput.Value, _yAxisInput.Value);
+            var movement = moveDir * _moveSpeed * Time.DeltaTime + weaponKnockback * knockbackDelayRemain / knockbackDelay;
             var animation = _animator.CurrentAnimationName;
 
-            if (moveDir != Vector2.Zero)
-            {
-                var movement = moveDir * _moveSpeed * Time.DeltaTime;
-                _animator.FlipX = !(moveDir.X > 0);
+            if (movement != Vector2.Zero)
                 animation = "Run";
-                _mover.CalculateMovement(ref movement, out var res);
-                _mover.ApplyMovement(movement);
-            }
             else
-            {
-                animation = "Idle";
-            }
+                animation = "Idle"; 
 
-            var aimingDirection = Entity.GetComponent<WeaponHolder>().aimingDirection;
+            _animator.FlipX = !(moveDir.X > 0);
+            _mover.Move(movement, out var res);
+
+            var aimingDirection = _weapon.aimingDirection;
             if ((aimingDirection).X < 0)
                 _animator.FlipX = false;
             if ((aimingDirection).X > 0)
@@ -103,10 +131,28 @@ namespace NezTopDown.Components
 
             if (!_animator.IsAnimationActive(animation))
                 _animator.Play(animation);
-            //Attack
-            if (Input.LeftMouseButtonPressed)
-                Entity.GetComponent<WeaponHolder>().Attack(Vector2.Normalize(aimingDirection));
 
+            if (knockbackDelayRemain > 0 && weaponKnockback != Vector2.Zero)
+            {
+                knockbackDelayRemain = Math.Max(0, knockbackDelayRemain - Time.DeltaTime);
+                if (knockbackDelayRemain <= 0)
+                {
+                    weaponKnockback = Vector2.Zero;
+                    knockbackDelayRemain = knockbackDelay;
+                }
+            }
+
+            //Attack
+            if (Game1.WeaponsList[_weapon.currentWeapon].type == 1)
+            {
+                if (Input.LeftMouseButtonPressed)
+                    weaponKnockback = _weapon.Attack(Vector2.Normalize(aimingDirection));
+            }
+            else
+            {
+                if (Input.LeftMouseButtonDown)
+                    weaponKnockback = _weapon.Attack(Vector2.Normalize(aimingDirection));
+            }
 
             if (Input.IsKeyPressed(Keys.F))
                 ChangeWeapon = true;
@@ -116,7 +162,7 @@ namespace NezTopDown.Components
 
         void PlayerState_Hit()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

@@ -17,9 +17,14 @@ namespace NezTopDown.Components.AI
 
         public int GetTargetsCount() => targets == null ? 0 : targets.Count;
 
-        public override void OnAddedToEntity()
+        public override void Initialize()
         {
             currentTarget = Entity.Scene.FindEntity("player").Transform;
+            base.Initialize();
+        }
+
+        public override void OnAddedToEntity()
+        {
             base.OnAddedToEntity();
         }
     }

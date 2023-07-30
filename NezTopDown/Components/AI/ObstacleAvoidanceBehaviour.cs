@@ -2,15 +2,12 @@
 using Nez;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NezTopDown.Components.AI
 {
     public class ObstacleAvoidanceBehaviour : SteeringBehaviour
     {
-        private float radius = 30f, agentColliderSize = 17f;
+        private float radius = 40f, agentColliderSize = 17f;
 
         //gizmo parameters
         float[] dangersResultTemp = null;
@@ -77,40 +74,18 @@ namespace NezTopDown.Components.AI
             }
             base.DebugRender(batcher);
         }
-        /*
-private void OnDrawGizmos()
-{
-   if (showGizmo == false)
-       return;
-
-   if (Application.isPlaying && dangersResultTemp != null)
-   {
-       if (dangersResultTemp != null)
-       {
-           Gizmos.color = Color.red;
-           for (int i = 0; i < dangersResultTemp.Length; i++)
-           {
-               Gizmos.DrawRay(
-                   transform.position,
-                   Directions.eightDirections[i] * dangersResultTemp[i] * 2
-                   );
-           }
-       }
-   }
-}
-*/
     }
     public static class Directions
     {
         public static List<Vector2> eightDirections = new List<Vector2>{
-            Vector2.Normalize(new Vector2(0,1)),
-            Vector2.Normalize(new Vector2(1,1)),
             Vector2.Normalize(new Vector2(1,0)),
-            Vector2.Normalize(new Vector2(1,-1)),
-            Vector2.Normalize(new Vector2(0,-1)),
-            Vector2.Normalize(new Vector2(-1,-1)),
+            Vector2.Normalize(new Vector2(1,1)),
+            Vector2.Normalize(new Vector2(0,1)),
+            Vector2.Normalize(new Vector2(-1,1)),
             Vector2.Normalize(new Vector2(-1,0)),
-            Vector2.Normalize(new Vector2(-1,1))
+            Vector2.Normalize(new Vector2(-1,-1)),
+            Vector2.Normalize(new Vector2(0,-1)),
+            Vector2.Normalize(new Vector2(1,-1))
         };
     }
 }

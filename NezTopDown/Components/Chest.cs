@@ -22,13 +22,13 @@ namespace NezTopDown.Components
             chestOpened = Entity.Scene.Content.Load<Texture2D>("Sprites/Props/ChestOpened");
 
             Entity.AddComponent(new BoxCollider()).IsTrigger = true;
-            Entity.AddComponent(new SpriteRenderer(chestClosed)).LayerDepth = 2;
+            Entity.AddComponent(new SpriteRenderer(chestClosed)).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Chest));
             Entity.Scale = new Vector2(1.5f);
 
             weapon = Entity.Scene.CreateEntity("weaponOnGround", Entity.Position);
-            weaponID = Nez.Random.Range(1, Game1.WeaponsList.Count);
+            weaponID = 5;
             weaponSprite = weapon.AddComponent(new SpriteRenderer(Game1.WeaponsList[weaponID].sprite));
-            weaponSprite.LayerDepth = -5;
+            weaponSprite.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Weapons));
             weaponSprite.Enabled = false;
             weaponCollider = weapon.AddComponent(new BoxCollider());
             weaponCollider.IsTrigger = true;

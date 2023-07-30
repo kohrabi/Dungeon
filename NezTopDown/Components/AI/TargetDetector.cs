@@ -28,10 +28,10 @@ namespace NezTopDown.Components.AI
 
         public override void OnAddedToEntity()
         {
-            Nez.Flags.SetFlag(ref obstaclesLayerMask, 2); // tile
-            Nez.Flags.SetFlag(ref obstaclesLayerMask, 1); // player
+            Nez.Flags.SetFlag(ref obstaclesLayerMask, (int)PhysicsLayers.Tile); // tile
+            Nez.Flags.SetFlag(ref obstaclesLayerMask, (int)PhysicsLayers.Player); // player
 
-            Nez.Flags.SetFlag(ref playerLayerMask, 1);
+            Nez.Flags.SetFlag(ref playerLayerMask, (int)PhysicsLayers.Player);
 
             base.OnAddedToEntity();
         }

@@ -10,46 +10,68 @@ namespace NezTopDown.Components
 {
     public class Enemy : Component, Nez.IUpdateable, ITriggerListener
     {
-        float _moveSpeed = 100f;
-        public Vector2 MovementInput { get; set; }
-        Vector2 hitMotion;
+        #region Constants
 
-        const float knockbackLength = 5f;
+        const float knockbackLength = 0.1f;
         const float knockbackMag = 5f;
         const float delayTime = 0.16f;
+        const float moveSpeed = 100f;
+        const float attackDelay = 1f;
 
-        SpriteAnimator _animator;
-        Mover _mover;
-        public EntityState enemyState { get; private set; }
+        #endregion
+
+        #region Components
+
+        private SpriteAnimator _animator;
+        private Mover _mover;
+        private WeaponHolder _weapon;
+
+        #endregion
+
+        #region Vars
+        Transform player;
+
+        float enemyHealth = 12f;
+        Vector2 hitMotion;
         string _animation;
+        public Vector2 MovementInput { get; set; }
+        public EntityState enemyState { get; private set; }
 
-        float enemyHealth;
+        // Counter for delays
+        float attackDelayRemain = attackDelay;
+        float delayRemain = delayTime;
+        float knockbackRemain = knockbackLength;
+
+        int hitBy;
+        #endregion
 
         public override void OnAddedToEntity()
         {
-            var atlas = Entity.Scene.Content.LoadSpriteAtlas("Content/Sprites/Enemy/Goblin/Goblin.atlas");
 
-            enemyHealth = 4;
+            var atlas = Entity.Scene.Content.LoadSpriteAtlas("Content/Sprites/Enemy/Goblin/Goblin.atlas");
+            player = Entity.Scene.FindEntity("player").Transform;
 
             _animator = Entity.AddComponent(new SpriteAnimator());
             _animator.AddAnimationsFromAtlas(atlas);
             _animator.Play("Idle");
-            _animator.LayerDepth = 0;
+            _animator.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Enemy));
             _animator.SetMaterial(new Material());
             _animation = _animator.CurrentAnimationName;
 
             enemyState = EntityState.Free;
 
-            Entity.AddComponent(new WeaponHolder());
+            _weapon = Entity.AddComponent(new WeaponHolder());
+
             // ------------Collider--------------
             var collider = Entity.AddComponent(new BoxCollider());
-            Flags.SetFlag(ref collider.PhysicsLayer, 3);
+            Flags.SetFlag(ref collider.PhysicsLayer, (int)PhysicsLayers.Enemy);
             collider.CollidesWithLayers = 0;
-            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, 3); // enemy
-            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, 2); // tile
+            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, (int)PhysicsLayers.Enemy); // enemy
+            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tile
             //collider.IsTrigger = true;
 
             _mover = Entity.AddComponent(new Mover());
+
             // --------------AI------------------
             Entity.AddComponent(new AIData());
             var ai = Entity.AddComponent(new EnemyAI());
@@ -62,11 +84,11 @@ namespace NezTopDown.Components
 
             var seekBehaviour = Entity.AddComponent(new SeekBehaviour());
             var obstacleAvoidanceBehaviour = Entity.AddComponent(new ObstacleAvoidanceBehaviour());
-            //var targetCircleBehaviour = Entity.AddComponent(new TargetCircleBehaviour());
+            var targetCircleBehaviour = Entity.AddComponent(new TargetCircleBehaviour());
 
             ai.AddSteeringBehaviour(seekBehaviour);
             ai.AddSteeringBehaviour(obstacleAvoidanceBehaviour);
-            //ai.AddSteeringBehaviour(targetCircleBehaviour);
+            ai.AddSteeringBehaviour(targetCircleBehaviour);
 
             Entity.AddComponent(new ContextSolver());
 
@@ -83,6 +105,9 @@ namespace NezTopDown.Components
                 case EntityState.Hit:
                     EnemyState_Hit();
                     break;
+                case EntityState.Dead:
+                    EnemyState_Dead();
+                    break;
             }
             if (!_animator.IsAnimationActive(_animation))
                 _animator.Play(_animation);
@@ -93,24 +118,44 @@ namespace NezTopDown.Components
         {
             if (MovementInput != Vector2.Zero)
             {
-                var movement = MovementInput * _moveSpeed * Time.DeltaTime;
+                var movement = MovementInput * moveSpeed * Time.DeltaTime;
                 _animator.FlipX = !(MovementInput.X > 0);
                 _animation = "Run";
                 _mover.Move(movement, out var res);
             }
             else
                 _animation = "Idle";
+
+            attackDelayRemain = Math.Max(0, attackDelayRemain - Time.DeltaTime);
+            Vector2 directionToPlayer = player.Position - Entity.Transform.Position;
+            if (directionToPlayer.Length() <= 70f)
+            {
+                if (attackDelayRemain <= 0f)
+                {
+                    _weapon.Attack(_weapon.aimingDirection);
+                    attackDelayRemain = attackDelay;
+                }
+            }
         }
 
-        float delayRemain = delayTime;
-        float knockbackRemain = knockbackLength;
         void EnemyState_Hit()
-        {
+        { 
+            if (enemyHealth <= 0)
+            {
+                enemyState = EntityState.Dead;
+                LevelGenerator.enemyCount--;
+                knockbackRemain *= 2;
+                _animator.UnPause();
+                _animation = "Death";
+                return;
+            }
+
             if (knockbackRemain <= 0)
             {
                 if (delayRemain <= 0f)
                 {
-                    enemyState = EntityState.Free;
+                    if (enemyHealth > 0)
+                        enemyState = EntityState.Free;
                     knockbackRemain = knockbackLength;
                     delayRemain = delayTime;
                     _animator.UnPause();
@@ -123,9 +168,33 @@ namespace NezTopDown.Components
                 _animation = "Death";
                 _animator.Pause();
                 _animator.Material.Effect = Game1.HitFlashEffect;
-                _mover.Move(Vector2.Normalize(hitMotion) * knockbackMag, out var res);
-                knockbackRemain = Math.Max(0, knockbackRemain - knockbackMag / knockbackLength);
+                if (_mover.Move(Vector2.Normalize(hitMotion) * knockbackMag * knockbackRemain / knockbackLength, out var res))
+                    hitMotion = -hitMotion;
+                knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
             }
+        }
+
+        void EnemyState_Dead()
+        {
+            if (_animator.CurrentFrame == _animator.CurrentAnimation.Sprites.Length - 1)
+                _animator.Pause();
+
+            if (knockbackRemain > 0f)
+            {
+                float strength = Game1.WeaponsList[hitBy].hitPoint / 10 * knockbackMag * knockbackRemain / knockbackLength;
+                if (_mover.Move(Vector2.Normalize(hitMotion) * strength, out var res))
+                    hitMotion = -hitMotion;
+            }
+            else
+            { 
+                Entity.GetComponent<BoxCollider>().Enabled = false;
+                Entity.GetComponent<EnemyAI>().Enabled = false; 
+            }
+            knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
+            _animator.Color = Color.Gray;
+
+            // disable entity leaving only the corpse
+            Entity.GetComponent<WeaponHolder>().Enabled = false;
         }
 
         public void Hit(Vector2 motion, float hitPoint)
@@ -139,10 +208,10 @@ namespace NezTopDown.Components
         uint check;
         public void OnTriggerEnter(Collider other, Collider local)
         {
-            if (check != other.Entity.Id)
+            if (other.Entity.Parent.Entity.Name != local.Entity.Name && check != other.Entity.Id && enemyHealth > 0)
             {
-                int hitBy = other.Entity.GetComponent<Melee>().WeaponID;
-                Hit(local.Transform.Position - other.Transform.Position, Game1.WeaponsList[hitBy].hitPoint);
+                hitBy = other.Entity.GetComponent<Projectile>().WeaponID;
+                Hit(other.Entity.GetComponent<Projectile>().Direction, Game1.WeaponsList[hitBy].hitPoint);
                 check = other.Entity.Id;
             }
         }

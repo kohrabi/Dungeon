@@ -23,7 +23,7 @@ namespace NezTopDown.Components
         Transform player;
 
         int equipping = 0;
-        public int currentWeapon { get; private set; } = 1;
+        public int currentWeapon { get; private set; } = 0;
         float firerateRemain = 0f;
 
         public override void OnAddedToEntity()
@@ -39,7 +39,7 @@ namespace NezTopDown.Components
             weaponSprite.SetParent(weaponOrigin);
             sprite = weaponSprite.AddComponent(new SpriteRenderer(Game1.WeaponsList[currentWeapon].sprite));
             sprite.FlipY = true;
-            sprite.LayerDepth = -1;
+            sprite.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Weapons));
             weaponSprite.Transform.Position = new Vector2(-10, 15);
 
 
@@ -50,6 +50,13 @@ namespace NezTopDown.Components
         [Inspectable]
         float angle;
 
+        public override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            weaponOrigin.Destroy();
+            weaponSprite.Destroy();
+        }
 
         void Nez.IUpdateable.Update()
         {
@@ -77,34 +84,64 @@ namespace NezTopDown.Components
                 angleOffset = 0;
             }
             angle = Mathf.Atan2(aimingDirection.Y, aimingDirection.X);
-
-            if (angle <= Math.PI / 2 && angle >= -MathF.PI / 2)
+            if (Game1.WeaponsList[currentWeapon].type == 1)
             {
-                weaponSprite.LocalPosition = new Vector2(-10, -15);
-                weaponOrigin.Transform.Rotation = angle + angleOffset;
-                sprite.FlipY = false;
+                if (angle <= Math.PI / 2 && angle >= -MathF.PI / 2)
+                {
+                    weaponSprite.LocalPosition = new Vector2(-10, -15);
+                    weaponOrigin.Transform.Rotation = angle + angleOffset;
+                    sprite.FlipY = false;
+                }
+                else
+                {
+                    weaponSprite.LocalPosition = new Vector2(-10, 15);
+                    weaponOrigin.Transform.Rotation = angle - angleOffset;
+                    sprite.FlipY = true;
+                }
             }
             else
             {
-                weaponSprite.LocalPosition = new Vector2(-10, 15);
-                weaponOrigin.Transform.Rotation = angle - angleOffset;
-                sprite.FlipY = true;
+                sprite.FlipX = true;
+                if (angle <= Math.PI / 2 && angle >= -MathF.PI / 2)
+                {
+                    weaponSprite.LocalPosition = new Vector2(-10, -5);
+                    weaponOrigin.Transform.Rotation = angle;
+                    sprite.FlipY = false;
+                }
+                else
+                {
+                    weaponSprite.LocalPosition = new Vector2(-10, 5);
+                    weaponOrigin.Transform.Rotation = angle;
+                    sprite.FlipY = true;
+                }
             }
+            firerateRemain -= Time.DeltaTime;
         }
 
-        public void Attack(Vector2 direction)
+        public Vector2 Attack(Vector2 direction)
         {
             Weapon weapon = Game1.WeaponsList[currentWeapon];
-            firerateRemain = Math.Max(0, firerateRemain - weapon.firerate);
             if (firerateRemain <= 0)
             {
+                if (Entity.Name == "player")
+                    Entity.Scene.Camera.GetComponent<CameraShake>().Shake(4, 0.4f, Vector2.Normalize(aimingDirection));
+
                 firerateRemain = weapon.firerate;
                 var entity = Entity.Scene.CreateEntity(Entity.Name + "Projectile");
-                entity.Transform.Position = Entity.Transform.Position;
+                entity.SetParent(Entity);
+                Vector2 knockback = direction * weapon.hitPoint / 10f;
                 if (weapon.type == 1)
+                {
                     entity.AddComponent(new Melee(currentWeapon, direction, weapon.range, weapon.speed));
-                Entity.Scene.Camera.GetComponent<CameraShake>().Shake(8, 0.7f, Vector2.Normalize(aimingDirection));
+                    return knockback.Length() < 1f ? Vector2.Zero : -knockback;
+                }
+                else if (weapon.type == 2)
+                {
+                    entity.AddComponent(new WeaponBullet(currentWeapon, direction, weapon.range, weapon.speed));
+                    return knockback.Length() < 1f ? Vector2.Zero : knockback;
+                }
             }
+            return Vector2.Zero;
         }
 
         public int ChangeWeapon(int weapon)

@@ -1,21 +1,27 @@
 ﻿using BulletMLLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
 using Nez;
+using Nez.BitmapFonts;
 using Nez.ImGuiTools;
 using Nez.Sprites;
 using Nez.Textures;
 using Nez.UI;
 using NezTopDown.Components;
+using NezTopDown.Components.AI;
 using NezTopDown.Components.Projectiles;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using static Nez.Textures.RenderTexture;
 
 namespace NezTopDown
 {
+
     public struct Weapon
     {
         public string name { get; set; }
@@ -33,7 +39,10 @@ namespace NezTopDown
         public static List<Sprite> Tiles { get; private set; }
         public static SpriteAtlas WeaponAtlas { get; private set; }
         public static Effect HitFlashEffect { get; private set; }
+        public static Effect LightBlackEffect { get; private set; }
         public static List<Weapon> WeaponsList { get; private set; }
+        public static SpriteAtlas ProjectilesAtlas { get; private set; }
+        public static BitmapFont DefaultFont { get;private set; }
 
         public Game1() : base()
         {
@@ -52,20 +61,41 @@ namespace NezTopDown
             // toggle ImGui rendering on/off. It starts out enabled.
             imGuiManager.SetEnabled(false);
             //---------------------------------------------
+            Core.DebugRenderEnabled = false;
 
 
-
-            //CreateGame();
+            Core.Scene = CreateGame();
             //CreateUITest();
-            CreateBulletTest();
+            //CreateBulletTest();
         }
 
-
+        static bool transitioning = false;
+        static float delay = 1f;
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            _bulletManager.Update();
+            //_bulletManager.Update();
+
+            if (LevelGenerator.enemyCount == 0 && !transitioning)
+            {
+                if (delay <= 0)
+                {
+                    Console.WriteLine("trans");
+                    var transition = new TextureWipeTransition(() => CreateGame(), Core.Content.Load<Texture2D>("nez/textures/textureWipeTransition/noise"));
+                    transition.Duration = 0.4f;
+                    Core.StartSceneTransition(transition);
+                    transitioning = true;
+                }
+                delay = Math.Max(0, delay - Time.DeltaTime);
+            }
+            if (Input.IsKeyReleased(Keys.F5) && !transitioning)
+            {
+                var transition = new TextureWipeTransition(() => CreateGame(), Core.Content.Load<Texture2D>("nez/textures/textureWipeTransition/noise"));
+                transition.Duration = 0.4f;
+                Core.StartSceneTransition(transition);
+                transitioning = true;
+            }
 
             //entity.Rotation += 5 * Time.DeltaTime;
         }
@@ -73,11 +103,13 @@ namespace NezTopDown
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+            /*
             Nez.Graphics.Instance.Batcher.Begin();
             foreach (BulletMover mover in _bulletManager.movers)
                 Nez.Graphics.Instance.Batcher.Draw(_bulletTexture, mover.pos);
             Nez.Graphics.Instance.Batcher.End();
             
+            */
         }
 
         BulletMLManager _bulletManager;
@@ -98,6 +130,7 @@ namespace NezTopDown
             entity.AddComponent(new BoxCollider());
             
             _bulletManager = new BulletMLManager(entity.Transform);
+            _bulletManager.Difficulty = 1.0; 
 
             _bulletPattern = new BulletPattern(_bulletManager);
             _bulletPattern.ParseXML("Content/Data/Bullets/TestBullet.xml");
@@ -118,7 +151,6 @@ namespace NezTopDown
         void CreateUITest()
         {
             var scene = new Scene();
-            Core.DebugRenderEnabled = true;
             //scene.SetDesignResolution(640, 480, Scene.SceneResolutionPolicy.ShowAllPixelPerfect);
 
             WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
@@ -179,21 +211,19 @@ namespace NezTopDown
             Core.Scene = scene;
         }
 
-        void CreateGame()
+        public static Scene CreateGame()
         {
             WeaponsList = new List<Weapon>();
-            WeaponsList.Add(new Weapon());
-
-            //Core.DebugRenderEnabled = true;
 
             var scene = Scene.CreateWithDefaultRenderer(Color.CornflowerBlue);
-            scene.SetDesignResolution(640, 480, Scene.SceneResolutionPolicy.ShowAllPixelPerfect);
+            //scene.SetDesignResolution(640, 480, Scene.SceneResolutionPolicy.ShowAllPixelPerfect);
 
+            DefaultFont = scene.Content.Load<BitmapFont>("nez/NezDefaultBMFont");
             HitFlashEffect = scene.Content.Load<Effect>("Effects/HitFlash");
-            var texture = scene.Content.Load<Texture2D>("Sprites/Tiles/Garden/Tiles");
-            Tiles = Sprite.SpritesFromAtlas(texture, 16, 16);
+            LightBlackEffect = scene.Content.Load<Effect>("Effects/LightBlack");
 
             WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
+            ProjectilesAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Projectiles/Projectiles.atlas");
             LoadWeapons();
 
             var entity = scene.CreateEntity("test");
@@ -210,12 +240,16 @@ namespace NezTopDown
 
             scene.Camera.AddComponent(new CameraShake());
             scene.AddSceneComponent(new CameraController());
-            scene.Camera.SetZoom(3f);
+            scene.Camera.SetZoom(0.4f);
 
-            Core.Scene = scene;
+            transitioning = false;
+            delay = 1f;
+
+
+            return scene;
         }
 
-        void LoadWeapons()
+        public static void LoadWeapons()
         {
             // FUCK ME FOR NAMING THING LIKE SHITTTTTTTT
             var json = JObject.Parse(File.ReadAllText("Content/Data/Weapons.json"));

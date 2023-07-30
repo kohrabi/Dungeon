@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Nez;
+using Nez.UI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NezTopDown.Components.AI
 {
@@ -50,46 +48,36 @@ namespace NezTopDown.Components.AI
             }
 
             //If we havent yet reached the target do the main logic of finding the interest directions
-            Vector2 directionToTarget = (targetPositionCached - (Vector2)Entity.Transform.Position);
+            float targetAngle = Utils.PointDirection(targetPositionCached, Entity.Transform.Position);
             for (int i = 0; i < interest.Length; i++)
             {
-                float result = Vector2.Dot(Vector2.Normalize(directionToTarget), Directions.eightDirections[i]);
-
+                float angle = (360 / 8) * i;
+                float difference = Math.Abs(Utils.AngleDifference(angle, targetAngle));
+                float result = (180 - difference) / 180;
+                interest[i] = result;
                 //accept only directions at the less than 90 degrees to the target direction
-                if (result > 0)
-                {
-                    float valueToPutIn = result;
-                    if (valueToPutIn > interest[i])
-                    {
-                        interest[i] = valueToPutIn;
-                    }
 
-                }
             }
             interestsTemp = interest;
             return (danger, interest);
         }
 
-        public override void DebugRender(Batcher batcher)
-        {
-            batcher.DrawCircle(targetPositionCached, 2f, Color.White);
-            if (interestsTemp != null)
-            {
-
-                if (interestsTemp != null)
-                {
-                    for (int i = 0; i < interestsTemp.Length; i++)
-                    {
-                        Debug.DrawLine(Entity.Transform.Position, Entity.Transform.Position + Directions.eightDirections[i] * interestsTemp[i] * 100, Color.White);
-                    }
-                }
-                if (reachedLastTarget == false)
-                {
-                    batcher.DrawCircle(targetPositionCached, 1f, Color.Red);
-                }
-            }
-
-            base.DebugRender(batcher);
-        }
+        //public override void DebugRender(Batcher batcher)
+        //{
+        //    batcher.DrawCircle(targetPositionCached, 2f, Color.White);
+        //    if (interestsTemp != null)
+        //    {
+        //        for (int i = 0; i < interestsTemp.Length; i++)
+        //        {
+        //            batcher.DrawLine(Entity.Transform.Position, Entity.Transform.Position + Directions.eightDirections[i] * interestsTemp[i] * 50, Color.White);
+        //        }
+        //        if (reachedLastTarget == false)
+        //        {
+        //            batcher.DrawCircle(targetPositionCached, 1f, Color.Red);
+        //        }
+        //    }
+        //
+        //    base.DebugRender(batcher);
+        //}
     }
 }

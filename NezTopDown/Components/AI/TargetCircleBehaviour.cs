@@ -9,25 +9,18 @@ namespace NezTopDown.Components.AI
 {
     public class TargetCircleBehaviour : SteeringBehaviour
     {
-        private float radius = 70f;
+        private float radius = 120f;
 
+        // Some Dummy dumb dumb stuff based on Game Endeavor's Devlog
         public override (float[] danger, float[] interest) GetSteering(float[] danger, float[] interest, AIData aiData)
         {
-            var player = Entity.Scene.FindEntity("player");
-            float distance = Vector2.Distance(Entity.Transform.Position, player.Transform.Position);
+            var player = Entity.Scene.FindEntity("player").Transform;
+            float distance = Vector2.Distance(Entity.Transform.Position, player.Position);
             if (distance <= radius)
             {
-                float weight = 1 - distance / radius;
-                Vector2 direction = player.Transform.Position - Entity.Transform.Position;
-                for (int i = 0; i < Directions.eightDirections.Count; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    float result = Vector2.Dot(direction, Directions.eightDirections[i]); 
-
-                    float valueToPut = result * weight;
-                    if (valueToPut > danger[i])
-                    {
-                        danger[i] = valueToPut;
-                    }
+                    interest[i] = 1 - Math.Abs(0.6f - interest[i]);
                 }
             }
             return (danger, interest);
