@@ -14,3 +14,4 @@ Thank You:<br />
 &nbsp;&nbsp;&nbsp;•&nbsp;[SunneyValleyStudios](https://www.youtube.com/@SunnyValleyStudio) for creating awesome tutorials<br />
 &nbsp;&nbsp;&nbsp;•&nbsp;ChessMasterRiley for creating a massive improvement to the Context Steering Behaviours ([Original post here](https://forum.gamemaker.io/index.php?threads/contextual-steering-behaviors-improvements.84871/))<br />
 &nbsp;&nbsp;&nbsp;•&nbsp;[anokolisa](https://anokolisa.itch.io/) for the asset ([Link Here](https://anokolisa.itch.io/dungeon-crawler-pixel-art-asset-pack))<br />
+&nbsp;&nbsp;&nbsp;•&nbsp;[SixDot](https://www.youtube.com/@IxxHATExxBUFFERING) for the [camera movement](https://www.youtube.com/watch?v=etI-2dHeufc) and [world generation](https://www.youtube.com/watch?v=I74I_MhZIK8&t=58s)
