@@ -12,7 +12,7 @@ namespace NezTopDown.Components.AI
 
     public class TargetDetector : Detector
     {
-        private float targetDetectionRange = 175f;
+        private float targetDetectionRange = 180f;
 
         private int obstaclesLayerMask, playerLayerMask;
 

@@ -7,7 +7,7 @@ namespace NezTopDown.Components.AI
 {
     public class ObstacleAvoidanceBehaviour : SteeringBehaviour
     {
-        private float radius = 40f, agentColliderSize = 17f;
+        private float radius = 30f, agentColliderSize = 17f;
 
         //gizmo parameters
         float[] dangersResultTemp = null;

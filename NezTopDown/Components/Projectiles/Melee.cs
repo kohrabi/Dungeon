@@ -22,6 +22,8 @@ namespace NezTopDown.Components.Projectiles
             {
                 Entity.Destroy();
             }
+            if (_animator.CurrentFrame == 2)
+                _collider.Enabled = false;
         }
     }
 }

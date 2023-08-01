@@ -240,7 +240,7 @@ namespace NezTopDown
 
             scene.Camera.AddComponent(new CameraShake());
             scene.AddSceneComponent(new CameraController());
-            scene.Camera.SetZoom(0.4f);
+            scene.Camera.SetZoom(1f);
 
             transitioning = false;
             delay = 1f;

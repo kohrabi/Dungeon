@@ -12,7 +12,7 @@ namespace NezTopDown.Components.AI
     {
         //gozmo parameters
         float[] interestGizmo = new float[0];
-        Vector2 resultDirection = Vector2.Zero;
+        Vector2 resultDirection = Vector2.UnitX;
         private float rayLength = 50;
 
         public ContextSolver()

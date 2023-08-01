@@ -20,10 +20,10 @@ namespace NezTopDown.Components.Projectiles
         protected float _range;
         protected float _remainingRange;
         protected float _moveSpeed;
-        protected ProjectileMover _mover;
 
-        private BoxCollider _collider;
-        private SpriteAnimator _animator;
+        protected ProjectileMover _mover;
+        protected SpriteAnimator _animator;
+        protected BoxCollider _collider;
 
 
         protected Projectile(int weaponID, Vector2 direction, float range = 100f, float moveSpeed = 5f)

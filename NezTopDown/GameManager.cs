@@ -11,11 +11,11 @@ namespace NezTopDown
         {
             Projectiles,
             Weapons,
+            WallBarrier,
             Player,
             Enemy,
             Chest,
-            WallBarrier,
-            Tile
+            Tile,
         }
 
         public static float GetLayerDepth(Sorting sorting)

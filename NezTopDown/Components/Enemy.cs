@@ -14,9 +14,11 @@ namespace NezTopDown.Components
 
         const float knockbackLength = 0.1f;
         const float knockbackMag = 5f;
-        const float delayTime = 0.16f;
+        const float delayTime = 0.06f;
         const float moveSpeed = 100f;
-        const float attackDelay = 1f;
+        const float attackDelay = 1.3f;
+        const float wanderDelay = 1.4f;
+        const float wanderingTime = 1f;
 
         #endregion
 
@@ -25,15 +27,20 @@ namespace NezTopDown.Components
         private SpriteAnimator _animator;
         private Mover _mover;
         private WeaponHolder _weapon;
+        private BoxCollider _collider;
 
         #endregion
 
         #region Vars
-        Transform player;
 
         float enemyHealth = 12f;
-        Vector2 hitMotion;
         string _animation;
+        Vector2 hitMotion;
+        Vector2 wanderDirection;
+        CollisionResult collisionResult;
+
+        public Transform player { get; private set; }
+        public bool IsAttacking { get; private set; }
         public Vector2 MovementInput { get; set; }
         public EntityState enemyState { get; private set; }
 
@@ -41,13 +48,14 @@ namespace NezTopDown.Components
         float attackDelayRemain = attackDelay;
         float delayRemain = delayTime;
         float knockbackRemain = knockbackLength;
+        float wanderRemain = wanderDelay;
+        float wanderingTimeRemain = 0;
 
         int hitBy;
         #endregion
 
         public override void OnAddedToEntity()
         {
-
             var atlas = Entity.Scene.Content.LoadSpriteAtlas("Content/Sprites/Enemy/Goblin/Goblin.atlas");
             player = Entity.Scene.FindEntity("player").Transform;
 
@@ -63,11 +71,11 @@ namespace NezTopDown.Components
             _weapon = Entity.AddComponent(new WeaponHolder());
 
             // ------------Collider--------------
-            var collider = Entity.AddComponent(new BoxCollider());
-            Flags.SetFlag(ref collider.PhysicsLayer, (int)PhysicsLayers.Enemy);
-            collider.CollidesWithLayers = 0;
-            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, (int)PhysicsLayers.Enemy); // enemy
-            Nez.Flags.SetFlag(ref collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tile
+            _collider = Entity.AddComponent(new BoxCollider());
+            Flags.SetFlag(ref _collider.PhysicsLayer, (int)PhysicsLayers.Enemy);
+            _collider.CollidesWithLayers = 0;
+            Nez.Flags.SetFlag(ref _collider.CollidesWithLayers, (int)PhysicsLayers.Enemy); // enemy
+            Nez.Flags.SetFlag(ref _collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tile
             //collider.IsTrigger = true;
 
             _mover = Entity.AddComponent(new Mover());
@@ -85,10 +93,12 @@ namespace NezTopDown.Components
             var seekBehaviour = Entity.AddComponent(new SeekBehaviour());
             var obstacleAvoidanceBehaviour = Entity.AddComponent(new ObstacleAvoidanceBehaviour());
             var targetCircleBehaviour = Entity.AddComponent(new TargetCircleBehaviour());
+            var combatMovementBehaviour = Entity.AddComponent(new CombatMovementBehaviour());
 
             ai.AddSteeringBehaviour(seekBehaviour);
             ai.AddSteeringBehaviour(obstacleAvoidanceBehaviour);
             ai.AddSteeringBehaviour(targetCircleBehaviour);
+            ai.AddSteeringBehaviour(combatMovementBehaviour);
 
             Entity.AddComponent(new ContextSolver());
 
@@ -116,24 +126,67 @@ namespace NezTopDown.Components
 
         void EnemyState_Free()
         {
-            if (MovementInput != Vector2.Zero)
+            // Handling Movement
+            // Most
+
+            Vector2 movement = Vector2.Zero;
+
+            // this is retarded i can just use the context steering instead of this 
+            if (MovementInput == Vector2.Zero)
             {
-                var movement = MovementInput * moveSpeed * Time.DeltaTime;
+                if (wanderingTimeRemain <= 0 && wanderRemain <= 0)
+                {
+                    float angle = 360 / 16 * Nez.Random.Range(0, 15);
+                    wanderDirection = new Vector2(Utils.LengthDir_X(1, angle), Utils.LengthDir_Y(1, angle));
+                    wanderingTimeRemain = wanderingTime;
+                }
+                if (collisionResult.Normal != Vector2.Zero)
+                    wanderDirection = Vector2.Reflect(wanderDirection, collisionResult.Normal);
+                movement = wanderDirection;
+
+                if (wanderRemain <= 0)
+                {
+                    wanderingTimeRemain = Math.Max(0, wanderingTimeRemain - Time.DeltaTime);
+                    if (wanderingTimeRemain <= 0)
+                    {
+                        wanderRemain = wanderDelay;
+                        movement = Vector2.Zero;
+                        wanderDirection = Vector2.Zero;
+                    }
+                }
+                wanderRemain = Math.Max(0, wanderRemain - Time.DeltaTime);
+            }
+            else
+            {
+                movement = MovementInput * moveSpeed * Time.DeltaTime;
+                wanderDirection = Vector2.Zero;
+            }
+
+            if (movement != Vector2.Zero)
+            {
                 _animator.FlipX = !(MovementInput.X > 0);
                 _animation = "Run";
-                _mover.Move(movement, out var res);
+                _mover.Move(movement, out collisionResult);
             }
             else
                 _animation = "Idle";
+            // Handling Random Wandering
 
-            attackDelayRemain = Math.Max(0, attackDelayRemain - Time.DeltaTime);
+
+            // Handling Attack
             Vector2 directionToPlayer = player.Position - Entity.Transform.Position;
-            if (directionToPlayer.Length() <= 70f)
+            attackDelayRemain = Math.Max(0, attackDelayRemain - Time.DeltaTime);
+            if (directionToPlayer.Length() <= 75f)
             {
                 if (attackDelayRemain <= 0f)
                 {
                     _weapon.Attack(_weapon.aimingDirection);
                     attackDelayRemain = attackDelay;
+                    IsAttacking = true;
+                }
+                else
+                {
+                    IsAttacking = false;
                 }
             }
         }
@@ -168,8 +221,9 @@ namespace NezTopDown.Components
                 _animation = "Death";
                 _animator.Pause();
                 _animator.Material.Effect = Game1.HitFlashEffect;
-                if (_mover.Move(Vector2.Normalize(hitMotion) * knockbackMag * knockbackRemain / knockbackLength, out var res))
-                    hitMotion = -hitMotion;
+                CollisionResult res;
+                if (_mover.Move(Vector2.Normalize(hitMotion) * knockbackMag * knockbackRemain / knockbackLength, out res))
+                    hitMotion = Vector2.Reflect(hitMotion, res.Normal);
                 knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
             }
         }
@@ -178,12 +232,14 @@ namespace NezTopDown.Components
         {
             if (_animator.CurrentFrame == _animator.CurrentAnimation.Sprites.Length - 1)
                 _animator.Pause();
-
+            Flags.UnsetFlag(ref _collider.PhysicsLayer, (int)PhysicsLayers.Enemy);
             if (knockbackRemain > 0f)
             {
                 float strength = Game1.WeaponsList[hitBy].hitPoint / 10 * knockbackMag * knockbackRemain / knockbackLength;
-                if (_mover.Move(Vector2.Normalize(hitMotion) * strength, out var res))
-                    hitMotion = -hitMotion;
+                CollisionResult res;
+                Debug.DrawLine(Entity.Position, Entity.Position + hitMotion * 100f, Color.White, 5f);
+                if (_mover.Move(Vector2.Normalize(hitMotion) * strength, out res))
+                    hitMotion = Vector2.Reflect(hitMotion, res.Normal);
             }
             else
             { 

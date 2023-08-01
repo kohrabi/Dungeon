@@ -124,7 +124,7 @@ namespace NezTopDown.Components
             if (firerateRemain <= 0)
             {
                 if (Entity.Name == "player")
-                    Entity.Scene.Camera.GetComponent<CameraShake>().Shake(4, 0.4f, Vector2.Normalize(aimingDirection));
+                    Entity.Scene.Camera.GetComponent<CameraShake>().Shake(8, 0.5f, Vector2.Normalize(aimingDirection));
 
                 firerateRemain = weapon.firerate;
                 var entity = Entity.Scene.CreateEntity(Entity.Name + "Projectile");
