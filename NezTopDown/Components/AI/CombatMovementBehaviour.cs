@@ -13,14 +13,14 @@ namespace NezTopDown.Components.AI
     {
         // another retarded shit
         // every fucking lines of code i wrote is fucking retarded ngl
-        const float movebackDelay = 0.08f;
+        const float movebackDelay = 0.06f;
         float movebackRemain = 0;
 
         public override (float[] danger, float[] interest) GetSteering(float[] danger, float[] interest, AIData aiData)
         {
-            var entity = Entity.GetComponent<Enemy>();
-            Vector2 directionToPlayer = Entity.Position - entity.player.Position;
-            if ((entity.IsAttacking || directionToPlayer.Length() <= 50f) && movebackRemain <= 0)
+            var enemy = Entity.GetComponent<Enemy>();
+            Vector2 directionToPlayer = Entity.Position - enemy.player.Position;
+            if ((enemy.IsAttacking || directionToPlayer.Length() <= 50f) && movebackRemain <= 0)
             {
                 movebackRemain = movebackDelay;
             }

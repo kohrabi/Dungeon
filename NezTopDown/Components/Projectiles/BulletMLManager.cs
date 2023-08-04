@@ -1,6 +1,7 @@
 ﻿using BulletMLLib;
 using Equationator;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,12 @@ using System.Threading.Tasks;
 namespace NezTopDown.Components.Projectiles
 {
     // From BulletMLSample
-    public class BulletMLManager : BulletMLLib.IBulletManager
+    public class BulletMLManager : SceneComponent, BulletMLLib.IBulletManager
     {
+        #region Vars
+
+        public static Texture2D BulletSprite { get; private set; }
+
         public Transform PlayerTransform;
 
         public List<BulletMover> movers = new List<BulletMover>();
@@ -78,57 +83,64 @@ namespace NezTopDown.Components.Projectiles
 
         public FunctionDelegate GameDifficulty => () => Difficulty;
 
+        #endregion
+
         public BulletMLManager(Transform playerTransform)
         {
             PlayerTransform = playerTransform;
         }
 
-        public IBullet CreateBullet()
+        public override void OnEnabled()
+        {
+            base.OnEnabled();
+            BulletSprite = Scene.Content.Load<Texture2D>("Sprites/Projectiles/Bullet");
+        }
+
+        public Bullet CreateBullet()
         {
             //create the new bullet
-            BulletMover bullet = new BulletMover(this);
+            BulletMover bullet = Scene.CreateEntity("bullet").AddComponent(new BulletMover(this));
 
             //set the speed and scale of the bullet
             bullet.TimeSpeed = TimeSpeed;
             bullet.Scale = Scale;
 
             //initialize, store in our list, and return the bullet
-            bullet.Init();
             movers.Add(bullet);
             return bullet;
         }
 
-        public IBullet CreateTopBullet()
+        public Bullet CreateTopBullet()
         {
             //create the new bullet
-            BulletMover mover = new BulletMover(this);
+            BulletMover mover = Scene.CreateEntity("topbullet").AddComponent(new BulletMover(this));
 
             //set the speed and scale of the bullet
             mover.TimeSpeed = TimeSpeed;
             mover.Scale = Scale;
 
             //initialize, store in our list, and return the bullet
-            mover.Init();
             topLevelMovers.Add(mover);
             return mover;
         }
 
-        public Vector2 PlayerPosition(IBullet targettedBullet)
+        public Vector2 PlayerPosition(Bullet targettedBullet)
         {
             Debug.ErrorIf(PlayerTransform == null, "BulletML: PlayerTransform is null");
             return PlayerTransform.Position;
         }
 
-        public void RemoveBullet(IBullet deadBullet)
+        public void RemoveBullet(Bullet deadBullet)
         {
             BulletMover myMover = deadBullet as BulletMover;
             if (myMover != null)
             {
                 myMover.Used = false;
+                myMover.Entity.Destroy();
             }
         }
-
-        public void Update()
+      
+        public override void Update()
         {
             for (int i = 0; i < movers.Count; i++)
             {
@@ -159,6 +171,7 @@ namespace NezTopDown.Components.Projectiles
             {
                 if (topLevelMovers[i].TasksFinished())
                 {
+                    RemoveBullet(topLevelMovers[i]);
                     topLevelMovers.RemoveAt(i);
                     i--;
                 }

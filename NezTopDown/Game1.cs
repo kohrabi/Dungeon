@@ -61,12 +61,12 @@ namespace NezTopDown
             // toggle ImGui rendering on/off. It starts out enabled.
             imGuiManager.SetEnabled(false);
             //---------------------------------------------
-            Core.DebugRenderEnabled = true;
+            Core.DebugRenderEnabled = false;
 
 
-            Core.Scene = CreateGame();
+            //Core.Scene = CreateGame();
             //CreateUITest();
-            //CreateBulletTest();
+            CreateBulletTest();
         }
 
         static bool transitioning = false;
@@ -75,8 +75,7 @@ namespace NezTopDown
         {
             base.Update(gameTime);
 
-            //_bulletManager.Update();
-
+            /*
             if (LevelGenerator.enemyCount == 0 && !transitioning)
             {
                 if (delay <= 0)
@@ -96,6 +95,7 @@ namespace NezTopDown
                 Core.StartSceneTransition(transition);
                 transitioning = true;
             }
+            */
 
             //entity.Rotation += 5 * Time.DeltaTime;
         }
@@ -103,13 +103,8 @@ namespace NezTopDown
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            /*
-            Nez.Graphics.Instance.Batcher.Begin();
-            foreach (BulletMover mover in _bulletManager.movers)
-                Nez.Graphics.Instance.Batcher.Draw(_bulletTexture, mover.pos);
-            Nez.Graphics.Instance.Batcher.End();
             
-            */
+            
         }
 
         BulletMLManager _bulletManager;
@@ -129,7 +124,7 @@ namespace NezTopDown
             entity.AddComponent(new SpriteRenderer(WeaponAtlas.Sprites[0]));
             entity.AddComponent(new BoxCollider());
             
-            _bulletManager = new BulletMLManager(entity.Transform);
+            _bulletManager = scene.AddSceneComponent(new BulletMLManager(entity.Transform));
             _bulletManager.Difficulty = 1.0; 
 
             _bulletPattern = new BulletPattern(_bulletManager);
@@ -140,7 +135,7 @@ namespace NezTopDown
 
             //add a new bullet in the center of the screen
             _bulletMover = (BulletMover)_bulletManager.CreateTopBullet();
-            _bulletMover.pos = new Vector2(Screen.PreferredBackBufferWidth / 2f, Screen.PreferredBackBufferHeight / 2f);
+            _bulletMover.Transform.Position = new Vector2(Screen.PreferredBackBufferWidth / 2f, Screen.PreferredBackBufferHeight / 2f);
             _bulletMover.InitTopNode(_bulletPattern.RootNode);
             Core.Scene = scene;
         }

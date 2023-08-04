@@ -14,8 +14,8 @@ namespace NezTopDown.Components.AI
         // Some Dummy dumb dumb stuff based on Game Endeavor's Devlog
         public override (float[] danger, float[] interest) GetSteering(float[] danger, float[] interest, AIData aiData)
         {
-            var player = Entity.Scene.FindEntity("player").Transform;
-            float distance = Vector2.Distance(Entity.Transform.Position, player.Position);
+            var player = Entity.Scene.FindEntity("player").Transform.Position;
+            float distance = Vector2.Distance(Entity.Transform.Position, player);
             if (distance <= radius)
             {
                 for (int i = 0; i < 8; i++)

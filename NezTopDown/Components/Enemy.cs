@@ -132,13 +132,14 @@ namespace NezTopDown.Components
             Vector2 movement = Vector2.Zero;
 
             // this is retarded i can just use the context steering instead of this 
+            Vector2 directionToPlayer = player.Position - Entity.Transform.Position;
             if (MovementInput == Vector2.Zero)
             {
                 if (wanderingTimeRemain <= 0 && wanderRemain <= 0)
                 {
                     float angle = 360 / 16 * Nez.Random.Range(0, 15);
                     wanderDirection = new Vector2(Utils.LengthDir_X(1, angle), Utils.LengthDir_Y(1, angle));
-                    wanderingTimeRemain = wanderingTime;
+                    wanderingTimeRemain = wanderingTime + Nez.Random.Range(0, 1f);
                 }
                 if (collisionResult.Normal != Vector2.Zero)
                     wanderDirection = Vector2.Reflect(wanderDirection, collisionResult.Normal);
@@ -149,7 +150,7 @@ namespace NezTopDown.Components
                     wanderingTimeRemain = Math.Max(0, wanderingTimeRemain - Time.DeltaTime);
                     if (wanderingTimeRemain <= 0)
                     {
-                        wanderRemain = wanderDelay;
+                        wanderRemain = wanderDelay + Nez.Random.Range(0, 1f);
                         movement = Vector2.Zero;
                         wanderDirection = Vector2.Zero;
                     }
@@ -174,7 +175,6 @@ namespace NezTopDown.Components
 
 
             // Handling Attack
-            Vector2 directionToPlayer = player.Position - Entity.Transform.Position;
             attackDelayRemain = Math.Max(0, attackDelayRemain - Time.DeltaTime);
             if (directionToPlayer.Length() <= 75f)
             {
@@ -222,7 +222,7 @@ namespace NezTopDown.Components
                 _animator.Pause();
                 _animator.Material.Effect = Game1.HitFlashEffect;
                 CollisionResult res;
-                if (_mover.Move(Vector2.Normalize(hitMotion) * knockbackMag * knockbackRemain / knockbackLength, out res))
+                if (_mover.Move(Vector2.Normalize(hitMotion) * enemyHealth / Game1.WeaponsList[hitBy].hitPoint * knockbackMag * knockbackRemain / knockbackLength, out res))
                     hitMotion = Vector2.Reflect(hitMotion, res.Normal);
                 knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
             }

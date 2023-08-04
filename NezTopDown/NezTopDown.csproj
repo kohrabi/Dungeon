@@ -36,13 +36,12 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BulletMLLib" Version="2.0.5" />
-    <PackageReference Include="Equationator" Version="1.0.10" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BulletMLLib\BulletMLLib\BulletMLLib\BulletMLLib.csproj" />
     <ProjectReference Include="..\Nez\Nez.ImGui\Nez.MG38.ImGui.csproj" />
     <ProjectReference Include="..\Nez\Nez.Portable\Nez.MG38.csproj" />
   </ItemGroup>

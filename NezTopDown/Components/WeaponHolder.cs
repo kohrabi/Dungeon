@@ -54,6 +54,8 @@ namespace NezTopDown.Components
         {
             base.OnDisabled();
 
+            weaponOrigin.Parent = null;
+            weaponSprite.Parent = null;
             weaponOrigin.Destroy();
             weaponSprite.Destroy();
         }

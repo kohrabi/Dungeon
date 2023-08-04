@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez.MG38", "Nez\Nez.Portabl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez.MG38.ImGui", "Nez\Nez.ImGui\Nez.MG38.ImGui.csproj", "{56915B87-BFFE-4859-AAEF-A11A74D8090C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BulletMLLib", "BulletMLLib\BulletMLLib\BulletMLLib\BulletMLLib.csproj", "{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56915B87-BFFE-4859-AAEF-A11A74D8090C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

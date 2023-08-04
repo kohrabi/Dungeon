@@ -51,7 +51,7 @@ namespace NezTopDown.Components
             _collider = Entity.AddComponent(new BoxCollider());
             Flags.SetFlag(ref _collider.PhysicsLayer, (int)PhysicsLayers.Player);
             _collider.CollidesWithLayers = 0;
-            Flags.SetFlag(ref _collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tile
+            Flags.SetFlag(ref _collider.CollidesWithLayers, (int)PhysicsLayers.Tile); // tileh
             _mover = Entity.AddComponent<Mover>();
 
             playerState = EntityState.Free;

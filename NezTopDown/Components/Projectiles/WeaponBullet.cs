@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Sprites;
-using SharpDX.MediaFoundation;
 using System;
 
 namespace NezTopDown.Components.Projectiles
