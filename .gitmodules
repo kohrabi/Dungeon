@@ -1,6 +1,7 @@
 [submodule "Nez"]
 	path = Nez
 	url = https://github.com/prime31/Nez.git
+	
 [submodule "BulletMLLib"]
 	path = BulletMLLib
-	url = https://github.com/kohrabi/BulletMLLib
+	url = https://github.com/kohrabi/BulletMLLib.git
