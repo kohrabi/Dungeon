@@ -27,7 +27,7 @@ namespace NezTopDown.Components
 
             weapon = Entity.Scene.CreateEntity("weaponOnGround", Entity.Position);
             weaponID = 5;
-            weaponSprite = weapon.AddComponent(new SpriteRenderer(Game1.WeaponsList[weaponID].sprite));
+            weaponSprite = weapon.AddComponent(new SpriteRenderer(GameManager.WeaponsList[weaponID].sprite));
             weaponSprite.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Weapons));
             weaponSprite.Enabled = false;
             weaponCollider = weapon.AddComponent(new BoxCollider());
@@ -53,7 +53,7 @@ namespace NezTopDown.Components
                 int playerPrevWeapon = player.GetComponent<WeaponHolder>().ChangeWeapon(weaponID);
                 if (playerPrevWeapon != 0)
                 {
-                    weaponSprite.SetSprite(Game1.WeaponsList[playerPrevWeapon].sprite);
+                    weaponSprite.SetSprite(GameManager.WeaponsList[playerPrevWeapon].sprite);
                     weaponID = playerPrevWeapon;
                 }
             }

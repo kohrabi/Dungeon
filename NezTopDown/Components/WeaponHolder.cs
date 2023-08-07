@@ -37,7 +37,7 @@ namespace NezTopDown.Components
 
             weaponSprite = Entity.Scene.CreateEntity(Entity.Name + "WeaponSprite");
             weaponSprite.SetParent(weaponOrigin);
-            sprite = weaponSprite.AddComponent(new SpriteRenderer(Game1.WeaponsList[currentWeapon].sprite));
+            sprite = weaponSprite.AddComponent(new SpriteRenderer(GameManager.WeaponsList[currentWeapon].sprite));
             sprite.FlipY = true;
             sprite.SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Weapons));
             weaponSprite.Transform.Position = new Vector2(-10, 15);
@@ -86,7 +86,7 @@ namespace NezTopDown.Components
                 angleOffset = 0;
             }
             angle = Mathf.Atan2(aimingDirection.Y, aimingDirection.X);
-            if (Game1.WeaponsList[currentWeapon].type == 1)
+            if (GameManager.WeaponsList[currentWeapon].type == 1)
             {
                 if (angle <= Math.PI / 2 && angle >= -MathF.PI / 2)
                 {
@@ -122,7 +122,7 @@ namespace NezTopDown.Components
 
         public Vector2 Attack(Vector2 direction)
         {
-            Weapon weapon = Game1.WeaponsList[currentWeapon];
+            Weapon weapon = GameManager.WeaponsList[currentWeapon];
             if (firerateRemain <= 0)
             {
                 if (Entity.Name == "player")
@@ -158,8 +158,8 @@ namespace NezTopDown.Components
                 int equip = currentWeapon;
                 currentWeapon = weapon;
                 Weapons[equipping] = currentWeapon;
-                firerateRemain = Game1.WeaponsList[currentWeapon].firerate;
-                weaponSprite.GetComponent<SpriteRenderer>().SetSprite(Game1.WeaponsList[currentWeapon].sprite);
+                firerateRemain = GameManager.WeaponsList[currentWeapon].firerate;
+                weaponSprite.GetComponent<SpriteRenderer>().SetSprite(GameManager.WeaponsList[currentWeapon].sprite);
                 return equip;
             //}
         }

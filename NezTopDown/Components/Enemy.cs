@@ -3,6 +3,7 @@ using Nez;
 using Nez.Sprites;
 using Nez.Textures;
 using NezTopDown.Components.AI;
+using NezTopDown.Components.LevelGen;
 using NezTopDown.Components.Projectiles;
 using System;
 
@@ -220,9 +221,9 @@ namespace NezTopDown.Components
             {
                 _animation = "Death";
                 _animator.Pause();
-                _animator.Material.Effect = Game1.HitFlashEffect;
+                _animator.Material.Effect = GameManager.HitFlashEffect;
                 CollisionResult res;
-                if (_mover.Move(Vector2.Normalize(hitMotion) * enemyHealth / Game1.WeaponsList[hitBy].hitPoint * knockbackMag * knockbackRemain / knockbackLength, out res))
+                if (_mover.Move(Vector2.Normalize(hitMotion) * enemyHealth / GameManager.WeaponsList[hitBy].hitPoint * knockbackMag * knockbackRemain / knockbackLength, out res))
                     hitMotion = Vector2.Reflect(hitMotion, res.Normal);
                 knockbackRemain = Math.Max(0, knockbackRemain - Time.DeltaTime);
             }
@@ -235,7 +236,7 @@ namespace NezTopDown.Components
             Flags.UnsetFlag(ref _collider.PhysicsLayer, (int)PhysicsLayers.Enemy);
             if (knockbackRemain > 0f)
             {
-                float strength = Game1.WeaponsList[hitBy].hitPoint / 10 * knockbackMag * knockbackRemain / knockbackLength;
+                float strength = GameManager.WeaponsList[hitBy].hitPoint / 10 * knockbackMag * knockbackRemain / knockbackLength;
                 CollisionResult res;
                 Debug.DrawLine(Entity.Position, Entity.Position + hitMotion * 100f, Color.White, 5f);
                 if (_mover.Move(Vector2.Normalize(hitMotion) * strength, out res))
@@ -267,7 +268,7 @@ namespace NezTopDown.Components
             if (other.Entity.Name != (string)(local.Entity.Name + "Projectile") && check != other.Entity.Id && enemyHealth > 0)
             {
                 hitBy = other.Entity.GetComponent<Projectile>().WeaponID;
-                Hit(other.Entity.GetComponent<Projectile>().Direction, Game1.WeaponsList[hitBy].hitPoint);
+                Hit(other.Entity.GetComponent<Projectile>().Direction, GameManager.WeaponsList[hitBy].hitPoint);
                 check = other.Entity.Id;
             }
         }

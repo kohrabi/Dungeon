@@ -29,7 +29,7 @@ namespace NezTopDown.Components.Projectiles
         protected Projectile(int weaponID, Vector2 direction, float range = 100f, float moveSpeed = 5f)
         {
             WeaponID = weaponID;
-            Type = Game1.WeaponsList[WeaponID].type;
+            Type = GameManager.WeaponsList[WeaponID].type;
             Direction = -Vector2.Normalize(direction);
             _range = range;
             _moveSpeed = moveSpeed;

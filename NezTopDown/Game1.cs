@@ -10,40 +10,19 @@ using Nez.Sprites;
 using Nez.Textures;
 using Nez.UI;
 using NezTopDown.Components;
-using NezTopDown.Components.AI;
+using NezTopDown.Components.LevelGen;
 using NezTopDown.Components.Projectiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using static Nez.Textures.RenderTexture;
+using static NezTopDown.GameManager;
 
 namespace NezTopDown
 {
-
-    public struct Weapon
-    {
-        public string name { get; set; }
-        public int type { get; set; }
-        public float hitPoint { get; set; }
-        public float range { get; set; }
-        public float firerate { get; set; }
-        public float speed { get; set; }
-        public Sprite sprite { get; set; }
-    }
-
     public class Game1 : Core
     {
-
-        public static List<Sprite> Tiles { get; private set; }
-        public static SpriteAtlas WeaponAtlas { get; private set; }
-        public static Effect HitFlashEffect { get; private set; }
-        public static Effect LightBlackEffect { get; private set; }
-        public static List<Weapon> WeaponsList { get; private set; }
-        public static SpriteAtlas ProjectilesAtlas { get; private set; }
-        public static BitmapFont DefaultFont { get;private set; }
-
         public Game1() : base()
         {
         }
@@ -64,9 +43,9 @@ namespace NezTopDown
             Core.DebugRenderEnabled = false;
 
 
-            //Core.Scene = CreateGame();
+            Core.Scene = CreateGame();
             //CreateUITest();
-            CreateBulletTest();
+            //CreateBulletTest();
         }
 
         static bool transitioning = false;
@@ -75,7 +54,7 @@ namespace NezTopDown
         {
             base.Update(gameTime);
 
-            /*
+            
             if (LevelGenerator.enemyCount == 0 && !transitioning)
             {
                 if (delay <= 0)
@@ -95,16 +74,9 @@ namespace NezTopDown
                 Core.StartSceneTransition(transition);
                 transitioning = true;
             }
-            */
+            
 
             //entity.Rotation += 5 * Time.DeltaTime;
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
-            
-            
         }
 
         BulletMLManager _bulletManager;
@@ -118,10 +90,10 @@ namespace NezTopDown
     
             _bulletTexture = scene.Content.Load<Texture2D>("Sprites/Projectiles/Bullet");
 
-            WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
+            GameManager.WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
             var entity = scene.CreateEntity("test");
             entity.Transform.Position = new Vector2(300, 300);
-            entity.AddComponent(new SpriteRenderer(WeaponAtlas.Sprites[0]));
+            entity.AddComponent(new SpriteRenderer(GameManager.WeaponAtlas.Sprites[0]));
             entity.AddComponent(new BoxCollider());
             
             _bulletManager = scene.AddSceneComponent(new BulletMLManager(entity.Transform));
@@ -148,7 +120,7 @@ namespace NezTopDown
             var scene = new Scene();
             //scene.SetDesignResolution(640, 480, Scene.SceneResolutionPolicy.ShowAllPixelPerfect);
 
-            WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
+            GameManager.WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
 
             var healthbarTex = scene.Content.Load<Texture2D>("Sprites/GUI/HealthBar");
             var healthbar = new SpriteDrawable(healthbarTex);
@@ -198,7 +170,7 @@ namespace NezTopDown
 
             scene.CreateEntity("test")
                 .SetPosition(300, 300)
-                .AddComponent(new SpriteRenderer(WeaponAtlas.Sprites[0]))
+                .AddComponent(new SpriteRenderer(GameManager.WeaponAtlas.Sprites[0]))
                 .AddComponent(new BoxCollider())
                 .Transform.SetScale(2f);
             
@@ -210,7 +182,7 @@ namespace NezTopDown
         {
             WeaponsList = new List<Weapon>();
 
-            var scene = Scene.CreateWithDefaultRenderer(Color.CornflowerBlue);
+            var scene = Scene.CreateWithDefaultRenderer(Color.Black);
             //scene.SetDesignResolution(640, 480, Scene.SceneResolutionPolicy.ShowAllPixelPerfect);
 
             DefaultFont = scene.Content.Load<BitmapFont>("nez/NezDefaultBMFont");

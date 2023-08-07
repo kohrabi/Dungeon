@@ -5,23 +5,28 @@ using Nez.Textures;
 using System;
 using System.Collections.Generic;
 
-namespace NezTopDown.Components
+namespace NezTopDown.Components.LevelGen
 {
 	// Code By Six Dot: https://bit.ly/2z6f1v6
 	public class LevelGenerator : Component
     {
-		enum gridSpace { empty, floor, wall };
-		gridSpace[,] grid; // Vector 2D
+        #region Data Struct
+        public enum gridSpace { empty, floor, wall };
+        struct walker
+        {
+            public Vector2 dir;
+            public Vector2 pos;
+        }
+        #endregion
 
-		int roomHeight, roomWidth;
+        #region Vars
+        public Dictionary<Vector2, gridSpace> grid; // Vector 2D
+		HashSet<Vector2> floors = new HashSet<Vector2>();
+
+		public static int RoomHeight, RoomWidth;
 		Vector2 roomSizeWorldUnits = new Vector2(30, 30); // Use to calculate the size of the grid
 		float worldUnitsInOneGridCell = 1;
 
-		struct walker
-		{
-			public Vector2 dir;
-			public Vector2 pos;
-		}
 		List<walker> walkers;
 
 		float chanceWalkerChangeDir = 0.5f, chanceWalkerSpawn = 0.05f;
@@ -35,20 +40,21 @@ namespace NezTopDown.Components
 		int maxEnemyCount = 8;
 
 		int maxWalkers = 10;
-		float Scale = 3f; // Scale the Level
+		public float Scale = 3f; // Scale the Level
 		float percentToFill = 0.2f;
-		Sprite[] floorSprite = new Sprite[9];
-		Sprite[] wallSprite = new Sprite[5];
+
+        #endregion
 
         public override void Initialize()
         {
-			var atlas = Entity.Scene.Content.LoadSpriteAtlas("Content/Sprites/Tiles/Garden.atlas");
-			for (int i = 1; i <= 9; i++)
-				floorSprite[i - 1] = atlas.GetSprite("Tile" + i.ToString());
-			wallSprite[0] = atlas.GetSprite("LeftDirt");
-			wallSprite[1] = atlas.GetSprite("TopDirt");
-			wallSprite[2] = atlas.GetSprite("RightDirt");
-			wallSprite[3] = atlas.GetSprite("BottomDirt");
+			Levels.SetupDungeon(this);
+			//var atlas = Entity.Scene.Content.LoadSpriteAtlas("Content/Sprites/Tiles/Garden.atlas");
+			//for (int i = 1; i <= 9; i++)
+			//	floorSprite[i - 1] = atlas.GetSprite("Tile" + i.ToString());
+			//wallSprite[0] = atlas.GetSprite("LeftDirt");
+			//wallSprite[1] = atlas.GetSprite("TopDirt");
+			//wallSprite[2] = atlas.GetSprite("RightDirt");
+			//wallSprite[3] = atlas.GetSprite("BottomDirt");
 			base.Initialize();
         }
 
@@ -57,31 +63,32 @@ namespace NezTopDown.Components
 			Entity.Transform.Position = Vector2.Zero;
 			Setup();
 			CreateFloors();
-			CreateWalls();
 			RemoveSingleWalls();
-			for (int i = 0; i < roomSizeWorldUnits.Y; i++)
-			{
-				for (int j = 0; j < roomSizeWorldUnits.X; j++)
-					Console.Write("{0}", (int)grid[j, i]);
-				Console.WriteLine();
-			}
-			SpawnLevel();
+			//for (int i = 0; i < roomSizeWorldUnits.Y; i++)
+			//{
+			//	for (int j = 0; j < roomSizeWorldUnits.X; j++)
+			//		Console.Write("{0}", (int)grid[new Vector2(j, i)]);
+			//	Console.WriteLine();
+			//}
+			WallGenerator.CreateWalls(floors);
+			Levels.SpawnAllFloorTiles(floors);
 		}
 
-		void Setup()
+        #region Generating Methods
+        void Setup()
 		{
 			//find grid size
-			roomHeight = Mathf.RoundToInt(roomSizeWorldUnits.X / worldUnitsInOneGridCell);
-			roomWidth = Mathf.RoundToInt(roomSizeWorldUnits.Y / worldUnitsInOneGridCell);
+			RoomHeight = Mathf.RoundToInt(roomSizeWorldUnits.X / worldUnitsInOneGridCell);
+			RoomWidth = Mathf.RoundToInt(roomSizeWorldUnits.Y / worldUnitsInOneGridCell);
 			//create grid
-			grid = new gridSpace[roomWidth, roomHeight];
+			grid = new Dictionary<Vector2, gridSpace>();
 			//set grid's default state
-			for (int x = 0; x < roomWidth - 1; x++)
+			for (int x = 0; x < RoomWidth - 1; x++)
 			{
-				for (int y = 0; y < roomHeight - 1; y++)
+				for (int y = 0; y < RoomHeight - 1; y++)
 				{
 					//make every cell "empty"
-					grid[x, y] = gridSpace.empty;
+					grid[new Vector2(x, y)] = gridSpace.empty;
 				}
 			}
 			//set first walker
@@ -91,8 +98,9 @@ namespace NezTopDown.Components
 			walker newWalker = new walker();
 			newWalker.dir = RandomDirection();
 			//find center of grid
-			Vector2 spawnPos = new Vector2(Mathf.RoundToInt(roomWidth / 2.0f),
-											Mathf.RoundToInt(roomHeight / 2.0f));
+			Vector2 spawnPos = new Vector2(Mathf.RoundToInt(RoomWidth / 2.0f),
+											Mathf.RoundToInt(RoomHeight / 2.0f));
+			floors.Add(spawnPos);
 
 			Entity.Scene.FindEntity("player").Transform.Position = Entity.Transform.Position + spawnPos * 16 * Scale;
 
@@ -110,8 +118,14 @@ namespace NezTopDown.Components
 				//create floor at position of every walker
 				foreach (walker myWalker in walkers)
 				{
-					grid[(int)myWalker.pos.X, (int)myWalker.pos.Y] = gridSpace.floor;
-				}
+					grid[myWalker.pos] = gridSpace.floor;
+					floors.Add(myWalker.pos);
+                    if (Nez.Random.Chance(chanceSpawnEnemy) && enemyCount < maxEnemyCount)
+                    {
+                        Entity.Scene.CreateEntity("enemy", myWalker.pos).AddComponent(new Enemy());
+                        enemyCount++;
+                    }
+                }
 				//chance: destroy walker
 				int numberChecks = walkers.Count; //might modify count while in this loop
 				for (int i = 0; i < numberChecks; i++)
@@ -128,7 +142,6 @@ namespace NezTopDown.Components
 							Entity.Scene.CreateEntity("chest", pos).AddComponent(new Chest());
 							chestCount++;
 						}
-						
 
 						walkers.RemoveAt(i);
 						break; //only destroy one per iteration
@@ -171,58 +184,27 @@ namespace NezTopDown.Components
 				{
 					walker thisWalker = walkers[i];
 					//clamp x,y to leave a 1 space boarder: leave room for walls
-					thisWalker.pos.X = Mathf.Clamp(thisWalker.pos.X, 1, roomWidth - 2);
-					thisWalker.pos.Y = Mathf.Clamp(thisWalker.pos.Y, 1, roomHeight - 2);
+					thisWalker.pos.X = Mathf.Clamp(thisWalker.pos.X, 1, RoomWidth - 2);
+					thisWalker.pos.Y = Mathf.Clamp(thisWalker.pos.Y, 1, RoomHeight - 2);
 					walkers[i] = thisWalker;
 				}
 				//check to exit loop
-				if ((float)NumberOfFloors() / (float)grid.Length > percentToFill)
+				if ((float)NumberOfFloors() / (float)grid.Count > percentToFill)
 				{
 					break;
 				}
 				iterations++;
 			} while (iterations < 100000);
 		}
-		void CreateWalls()
-		{
-			//loop though every grid space
-			for (int x = 0; x < roomWidth - 1; x++)
-			{
-				for (int y = 0; y < roomHeight - 1; y++)
-				{
-					//if theres a floor, check the spaces around it
-					if (grid[x, y] == gridSpace.floor)
-					{
-						//if any surrounding spaces are empty, place a wall
-						if (grid[x, y + 1] == gridSpace.empty)
-						{
-							grid[x, y + 1] = gridSpace.wall;
-						}
-						if (grid[x, y - 1] == gridSpace.empty)
-						{
-							grid[x, y - 1] = gridSpace.wall;
-						}
-						if (grid[x + 1, y] == gridSpace.empty)
-						{
-							grid[x + 1, y] = gridSpace.wall;
-						}
-						if (grid[x - 1, y] == gridSpace.empty)
-						{
-							grid[x - 1, y] = gridSpace.wall;
-						}
-					}
-				}
-			}
-		}
 		void RemoveSingleWalls()
 		{
 			//loop though every grid space
-			for (int x = 0; x < roomWidth - 1; x++)
+			for (int x = 0; x < RoomWidth - 1; x++)
 			{
-				for (int y = 0; y < roomHeight - 1; y++)
+				for (int y = 0; y < RoomHeight - 1; y++)
 				{
 					//if theres a wall, check the spaces around it
-					if (grid[x, y] == gridSpace.wall)
+					if (grid[new Vector2(x, y)] == gridSpace.wall)
 					{
 						//assume all space around wall are floors
 						bool allFloors = true;
@@ -231,8 +213,8 @@ namespace NezTopDown.Components
 						{
 							for (int checkY = -1; checkY <= 1; checkY++)
 							{
-								if (x + checkX < 0 || x + checkX > roomWidth - 1 ||
-									y + checkY < 0 || y + checkY > roomHeight - 1)
+								if (x + checkX < 0 || x + checkX > RoomWidth - 1 ||
+									y + checkY < 0 || y + checkY > RoomHeight - 1)
 								{
 									//skip checks that are out of range
 									continue;
@@ -242,7 +224,7 @@ namespace NezTopDown.Components
 									//skip corners and center
 									continue;
 								}
-								if (grid[x + checkX, y + checkY] != gridSpace.floor)
+								if (grid[new Vector2(x + checkX, y + checkY)] != gridSpace.floor)
 								{
 									allFloors = false;
 								}
@@ -250,19 +232,9 @@ namespace NezTopDown.Components
 						}
 						if (allFloors)
 						{
-							grid[x, y] = gridSpace.floor;
+							grid[new Vector2(x, y)] = gridSpace.floor;
 						}
 					}
-				}
-			}
-		}
-		void SpawnLevel()
-		{
-			for (int x = 0; x < roomWidth; x++)
-			{
-				for (int y = 0; y < roomHeight; y++)
-				{
-					Spawn(x, y, grid[x, y]);
 				}
 			}
 		}
@@ -288,9 +260,9 @@ namespace NezTopDown.Components
 		int NumberOfFloors()
 		{
 			int count = 0;
-			foreach (gridSpace space in grid)
+			foreach (var space in grid)
 			{
-				if (space == gridSpace.floor)
+				if (space.Value == gridSpace.floor)
 				{
 					count++;
 				}
@@ -298,44 +270,7 @@ namespace NezTopDown.Components
 			return count;
 		}
 
-		void Spawn(int x, int y, gridSpace type)
-		{
-			if (!(x <= roomWidth && y <= roomHeight && x >= 0 && y >= 0))
-				return;
-			///find the position to spawn
-			Vector2 spawnPos = Entity.Position + new Vector2(x, y) * 16 * Scale;
-			//spawn object
-			var entity = Entity.Scene.CreateEntity("tile", spawnPos);
-			entity.SetParent(Entity);
-			Sprite sprite = floorSprite[Nez.Random.Range(0, floorSprite.Length)];
-			if (type == gridSpace.wall)
-			{
-				var box = entity.AddComponent<BoxCollider>();
-				
-				if (x - 1 >= 0 && grid[x - 1, y] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[0])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
-				if (y - 1 >= 0 && grid[x, y - 1] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[1])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
-                if (x + 1 < roomWidth && grid[x + 1, y] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[2])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
-                if (y + 1 < roomHeight && grid[x, y + 1] == gridSpace.floor)
-					entity.AddComponent(new SpriteRenderer(wallSprite[3])).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier));
-                box.Width = 16;
-				box.Height = 16;
-				Flags.SetFlag(ref box.PhysicsLayer, (int)PhysicsLayers.Tile);
-			}
-			entity.Scale *= Scale;
-			entity.AddComponent(new SpriteRenderer(sprite)).SetLayerDepth(LayerDepths.GetLayerDepth(LayerDepths.Sorting.Tile));
+        #endregion
 
-			// Spawning Enemy
-			if (type == gridSpace.floor)
-            {
-				if (Nez.Random.Chance(chanceSpawnEnemy) && enemyCount < maxEnemyCount)
-                {
-					Entity.Scene.CreateEntity("enemy", spawnPos).AddComponent(new Enemy());
-					enemyCount++;
-                }
-            }
-		}
 	}
 }

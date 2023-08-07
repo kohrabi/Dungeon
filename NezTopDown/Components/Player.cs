@@ -138,7 +138,7 @@ namespace NezTopDown.Components
             }
 
             //Attack
-            if (Game1.WeaponsList[_weapon.currentWeapon].type == 1)
+            if (GameManager.WeaponsList[_weapon.currentWeapon].type == 1)
             {
                 if (Input.LeftMouseButtonPressed)
                     weaponKnockback = _weapon.Attack(Vector2.Normalize(aimingDirection));

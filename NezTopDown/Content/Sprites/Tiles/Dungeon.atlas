@@ -1,0 +1,78 @@
+BottomFloor
+	0,0,16,16
+	0.5,0.5
+BottomLeftFloor
+	17,0,16,16
+	0.5,0.5
+BottomLeftWall
+	34,0,16,16
+	0.5,0.5
+BottomRightFloor
+	0,17,16,16
+	0.5,0.5
+BottomRightWall
+	17,17,16,16
+	0.5,0.5
+BottomWall
+	0,34,16,16
+	0.5,0.5
+CornerFloor
+	17,34,16,16
+	0.5,0.5
+DiagonalFloor
+	34,17,16,16
+	0.5,0.5
+DiagonalLeftFloor
+	34,34,16,16
+	0.5,0.5
+DiagonalRightFloor
+	51,0,16,16
+	0.5,0.5
+InnerCornerBottomLeftWall
+	51,17,16,16
+	0.5,0.5
+InnerCornerBottomRightWall
+	68,0,16,16
+	0.5,0.5
+InnerCornerTopLeftWall
+	51,34,16,16
+	0.5,0.5
+InnerCornerTopRightWall
+	68,17,16,16
+	0.5,0.5
+MidFloor
+	85,0,16,16
+	0.5,0.5
+MidLeftFloor
+	85,17,16,16
+	0.5,0.5
+MidLeftWall
+	68,34,16,16
+	0.5,0.5
+MidRightFloor
+	85,34,16,16
+	0.5,0.5
+MidRightWall
+	0,51,16,16
+	0.5,0.5
+MidWall
+	17,51,16,16
+	0.5,0.5
+TopFloor
+	0,68,16,16
+	0.5,0.5
+TopLeftFloor
+	34,51,16,16
+	0.5,0.5
+TopLeftWall
+	17,68,16,16
+	0.5,0.5
+TopRightFloor
+	51,51,16,16
+	0.5,0.5
+TopRightWall
+	34,68,16,16
+	0.5,0.5
+TopWall
+	51,68,16,16
+	0.5,0.5
