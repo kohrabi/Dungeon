@@ -36,6 +36,7 @@ namespace NezTopDown
         {
             Projectiles,
             Weapons,
+            WallCorner,
             WallBarrier,
             Player,
             Enemy,

@@ -85,7 +85,7 @@ namespace NezTopDown.Components.LevelGen
             var spriteRenderer = entity.AddComponent(new SpriteRenderer(sprite));
             spriteRenderer.LayerDepth = LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallBarrier);
             if (prioritize)
-                spriteRenderer.LayerDepth += spriteRenderer.LayerDepth / 10;
+                spriteRenderer.LayerDepth = LayerDepths.GetLayerDepth(LayerDepths.Sorting.WallCorner);
         }
 
         public static void PaintWall(Vector2 position, FastList<int> binaryType)
@@ -98,65 +98,50 @@ namespace NezTopDown.Components.LevelGen
             Flags.SetFlag(ref collider.PhysicsLayer, (int)PhysicsLayers.Tile);
             Sprite tile = null;
 
-            bool sideCheck = false;
 
             if (RulesCheck(binaryType, WallRules.TopLeft))
             {
                 AddTile(entity, Walls[(int)Sides.TopLeft], true);
                 if (RulesCheck(binaryType, WallRules.BottomLeft))
-                {
                     AddTile(entity, Walls[(int)Sides.BottomLeft], true);
-                    sideCheck = true;
-                }
             }
             if (RulesCheck(binaryType, WallRules.TopRight))
             {
                 AddTile(entity, Walls[(int)Sides.TopRight], true);
                 if (RulesCheck(binaryType, WallRules.BottomRight))
-                {
                     AddTile(entity, Walls[(int)Sides.BottomRight], true);
-                    sideCheck = true;
-                }
             }
             if (RulesCheck(binaryType, WallRules.BottomLeft))
             {
                 AddTile(entity, Walls[(int)Sides.BottomLeft], true);
                 if (RulesCheck(binaryType, WallRules.TopLeft))
-                {
                     AddTile(entity, Walls[(int)Sides.TopLeft], true);
-                    sideCheck = true;
-                }
             }
             if (RulesCheck(binaryType, WallRules.BottomRight))
             {
                 AddTile(entity, Walls[(int)Sides.BottomRight], true); 
                 if (RulesCheck(binaryType, WallRules.TopRight))
-                {
                     AddTile(entity, Walls[(int)Sides.TopRight], true);
-                    sideCheck = true;
-                }
             }
 
             if (RulesCheck(binaryType, WallRules.BottomLeftCorner))
-                tile = Walls[(int)WallCorners.InnerCornerBottomLeft];
+                AddTile(entity, Walls[(int)WallCorners.InnerCornerBottomLeft], true);
             if (RulesCheck(binaryType, WallRules.BottomRightCorner))
-                tile = Walls[(int)WallCorners.InnerCornerBottomRight];
+                AddTile(entity, Walls[(int)WallCorners.InnerCornerBottomRight], true);
             if (RulesCheck(binaryType, WallRules.TopLeftCorner))
-                tile = Walls[(int)WallCorners.InnerCornerTopLeft];
+                AddTile(entity, Walls[(int)WallCorners.InnerCornerTopLeft], true);
             if (RulesCheck(binaryType, WallRules.TopRightCorner))
-                tile = Walls[(int)WallCorners.InnerCornerTopRight];
+                AddTile(entity, Walls[(int)WallCorners.InnerCornerTopRight], true);
 
-            if (!sideCheck)
-            {
-                if (RulesCheck(binaryType, WallRules.Top))
-                    AddTile(entity, Walls[(int)Sides.Top]);
-                if (RulesCheck(binaryType, WallRules.Bottom))
-                    AddTile(entity, Walls[(int)Sides.Bottom]);
-                if (RulesCheck(binaryType, WallRules.Left))
-                    AddTile(entity, Walls[(int)Sides.MidLeft]);
-                if (RulesCheck(binaryType, WallRules.Right))
-                    AddTile(entity, Walls[(int)Sides.MidRight]);
-            }
+            if (RulesCheck(binaryType, WallRules.Top))
+                AddTile(entity, Walls[(int)Sides.Top]);
+            if (RulesCheck(binaryType, WallRules.Bottom))
+                AddTile(entity, Walls[(int)Sides.Bottom]);
+            if (RulesCheck(binaryType, WallRules.Left))
+                AddTile(entity, Walls[(int)Sides.MidLeft]);
+            if (RulesCheck(binaryType, WallRules.Right))
+                AddTile(entity, Walls[(int)Sides.MidRight]);
+        
    
 
             entity.Scale = new Vector2(scale);
