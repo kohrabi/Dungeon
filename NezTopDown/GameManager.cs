@@ -41,6 +41,7 @@ namespace NezTopDown
             Player,
             Enemy,
             Chest,
+            FrontWall,
             Tile,
         }
 

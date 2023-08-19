@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace NezTopDown.Components
 {
-    public class Chest : Component, Nez.IUpdateable
+    public class Chest : Component, Nez.IUpdatable
     {
         Texture2D chestClosed, chestOpened;
         Entity weapon, player;
@@ -37,7 +37,7 @@ namespace NezTopDown.Components
             player = Entity.Scene.FindEntity("player");
         }
 
-        void Nez.IUpdateable.Update()
+        public void Update()
         {
             // dude this is fuck up
             CollisionResult collision;

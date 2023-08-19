@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez.MG38.ImGui", "Nez\Nez.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BulletMLLib", "BulletMLLib\BulletMLLib\BulletMLLib\BulletMLLib.csproj", "{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{24647AF7-6337-486B-93C1-325CDB741C61}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LDtk", "LDtkMonogame\LDtk\LDtk.csproj", "{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,19 @@ Global
 		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{600A2409-FCAE-465F-ABAA-9F1B73D5B70F} = {24647AF7-6337-486B-93C1-325CDB741C61}
+		{56915B87-BFFE-4859-AAEF-A11A74D8090C} = {24647AF7-6337-486B-93C1-325CDB741C61}
+		{617C5BE6-C4D2-4DD6-B7C8-0B330467E335} = {24647AF7-6337-486B-93C1-325CDB741C61}
+		{75DA4A58-1E52-45D8-A36A-6BB9A4D33FDD} = {24647AF7-6337-486B-93C1-325CDB741C61}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ABB8C07D-62BE-4A47-AED9-8C1C892A4E4F}

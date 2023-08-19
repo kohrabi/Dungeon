@@ -8,7 +8,7 @@ using System;
 
 namespace NezTopDown.Components
 {
-    public class Player : Component, Nez.IUpdateable
+    public class Player : Component, Nez.IUpdatable
     {
         #region Constants
 
@@ -91,7 +91,7 @@ namespace NezTopDown.Components
 
         }
 
-        void Nez.IUpdateable.Update()
+        void Nez.IUpdatable.Update()
         {
             switch (playerState)
             {

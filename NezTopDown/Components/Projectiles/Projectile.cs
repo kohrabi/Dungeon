@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace NezTopDown.Components.Projectiles
 {
-    public abstract class Projectile : Component, Nez.IUpdateable
+    public abstract class Projectile : Component, Nez.IUpdatable
     {
         public int Type { get; set; }
         public int WeaponID { get; private set; }

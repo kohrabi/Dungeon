@@ -1,21 +1,25 @@
 ﻿using BulletMLLib;
+using LDtk;
+using LDtkTypes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
 using Nez;
+using Nez.AI.GOAP;
 using Nez.BitmapFonts;
 using Nez.ImGuiTools;
 using Nez.Sprites;
 using Nez.Textures;
 using Nez.UI;
 using NezTopDown.Components;
-using NezTopDown.Components.LevelGen;
+using NezTopDown.Components.LevelGenerator;
 using NezTopDown.Components.Projectiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static Nez.Textures.RenderTexture;
 using static NezTopDown.GameManager;
 
@@ -40,12 +44,13 @@ namespace NezTopDown
             // toggle ImGui rendering on/off. It starts out enabled.
             imGuiManager.SetEnabled(false);
             //---------------------------------------------
-            Core.DebugRenderEnabled = false;
+            Core.DebugRenderEnabled = true;
 
 
-            Core.Scene = CreateGame();
+            //Core.Scene = CreateGame();
             //CreateUITest();
             //CreateBulletTest();
+            CreateGeneratorTest();
         }
 
         static bool transitioning = false;
@@ -53,8 +58,23 @@ namespace NezTopDown
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            if (Input.IsKeyPressed(Keys.F5))
+            {
+                CreateGeneratorTest();
 
-            
+            }
+
+            Vector2 input = Vector2.Zero;
+            if (Input.IsKeyDown(Keys.W))
+                input.Y += -1f;
+            if (Input.IsKeyDown(Keys.S))
+                input.Y += 1F;
+            if (Input.IsKeyDown(Keys.A))
+                input.X += -1f;
+            if (Input.IsKeyDown(Keys.D))
+                input.X += 1f;
+            Core.Scene.Camera.Position += input * 10f;
+            /*
             if (LevelGenerator.enemyCount == 0 && !transitioning)
             {
                 if (delay <= 0)
@@ -74,9 +94,36 @@ namespace NezTopDown
                 Core.StartSceneTransition(transition);
                 transitioning = true;
             }
-            
+            */
 
             //entity.Rotation += 5 * Time.DeltaTime;
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+        }
+
+        Entity entity;
+
+        void CreateGeneratorTest()
+        {
+            var file = LDtkFile.FromFile("Content/Maps/Room1.ldtk");
+            var scene = Scene.CreateWithDefaultRenderer(file.BgColor);
+
+            _bulletTexture = scene.Content.Load<Texture2D>("Sprites/Projectiles/Bullet");
+            //scene.CreateEntity("ldtktest").AddComponent(new LDtkManager(file, Worlds.World.Iid, true));
+            scene.CreateEntity("generator").AddComponent(new LevelGenerator(file, Worlds.World.Iid, new Vector2(300f, 300f)));
+
+            GameManager.WeaponAtlas = scene.Content.LoadSpriteAtlas("Content/Sprites/Weapons.atlas");
+            entity = scene.CreateEntity("test");
+            entity.Transform.Position = new Vector2(300, 300);
+            entity.AddComponent(new SpriteRenderer(GameManager.WeaponAtlas.Sprites[0]));
+            entity.AddComponent(new BoxCollider());
+            //scene.CreateEntity("tiles").AddComponent(new LDtkRenderer(file, Worlds.World.Iid, true));
+
+
+            Core.Scene = scene;
         }
 
         BulletMLManager _bulletManager;
@@ -198,9 +245,9 @@ namespace NezTopDown
             entity.AddComponent(new SpriteRenderer(WeaponAtlas.Sprites[0]));
             entity.AddComponent(new BoxCollider());
 
-            var wtf = scene.CreateEntity("tiles");
-            wtf.AddComponent(new LevelGenerator());
-            wtf.Transform.Position = new Vector2(200, 200);
+            //var wtf = scene.CreateEntity("tiles");
+            //wtf.AddComponent(new LevelGenerator());
+            //wtf.Transform.Position = new Vector2(200, 200);
 
             var player = scene.CreateEntity("player");
             player.AddComponent(new Player());

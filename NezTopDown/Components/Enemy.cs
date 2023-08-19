@@ -3,13 +3,12 @@ using Nez;
 using Nez.Sprites;
 using Nez.Textures;
 using NezTopDown.Components.AI;
-using NezTopDown.Components.LevelGen;
 using NezTopDown.Components.Projectiles;
 using System;
 
 namespace NezTopDown.Components
 {
-    public class Enemy : Component, Nez.IUpdateable, ITriggerListener
+    public class Enemy : Component, Nez.IUpdatable, ITriggerListener
     {
         #region Constants
 
@@ -106,7 +105,7 @@ namespace NezTopDown.Components
             base.OnAddedToEntity();
         }
 
-        void Nez.IUpdateable.Update()
+        public void Update()
         {
             switch (enemyState)
             {
@@ -197,7 +196,6 @@ namespace NezTopDown.Components
             if (enemyHealth <= 0)
             {
                 enemyState = EntityState.Dead;
-                LevelGenerator.enemyCount--;
                 knockbackRemain *= 2;
                 _animator.UnPause();
                 _animation = "Death";

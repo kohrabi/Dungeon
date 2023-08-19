@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NezTopDown.Components.AI
 {
-    public class EnemyAI : Component, Nez.IUpdateable
+    public class EnemyAI : Component, Nez.IUpdatable
     {
         private List<SteeringBehaviour> steeringBehaviours;
         private List<Detector> detectors;
@@ -73,7 +73,7 @@ namespace NezTopDown.Components.AI
 
 
         float _remainingDelay = detectionDelay;
-        void Nez.IUpdateable.Update()
+        public void Update()
         {
             _remainingDelay -= Time.DeltaTime;
             if (_remainingDelay <= 0)

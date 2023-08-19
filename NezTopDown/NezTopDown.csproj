@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BulletMLLib\BulletMLLib\BulletMLLib\BulletMLLib.csproj" />
+    <ProjectReference Include="..\LDtkMonogame\LDtk\LDtk.csproj" />
     <ProjectReference Include="..\Nez\Nez.ImGui\Nez.MG38.ImGui.csproj" />
     <ProjectReference Include="..\Nez\Nez.Portable\Nez.MG38.csproj" />
   </ItemGroup>
@@ -53,6 +54,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\Data\Weapons.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Maps\Room1.ldtk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Maps\Tiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\nez\effects\Bevels.mgfxo">

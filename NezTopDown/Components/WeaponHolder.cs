@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace NezTopDown.Components
 {
-    public class WeaponHolder : Component, Nez.IUpdateable
+    public class WeaponHolder : Component, Nez.IUpdatable
     {
         Entity weaponSprite, weaponOrigin;
         List<int> Weapons;
@@ -60,7 +60,7 @@ namespace NezTopDown.Components
             weaponSprite.Destroy();
         }
 
-        void Nez.IUpdateable.Update()
+        void Nez.IUpdatable.Update()
         {
             //invisibleWeapon.TweenLocalRotationDegreesTo(123f, 0.3f).SetEaseType(Nez.Tweens.EaseType.ExpoOut).SetLoops(LoopType.RestartFromBeginning, -1).Start();
             /*if (Input.LeftMouseButtonPressed || isAttacking)
